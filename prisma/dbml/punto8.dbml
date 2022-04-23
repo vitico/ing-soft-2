@@ -1,0 +1,72 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 8 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Producto {
+  id Int [pk]
+  nombre String [not null]
+  precio Int [not null]
+  Descuento Descuento [not null]
+}
+
+Table Cliente {
+  id Int [pk]
+  nombre String [not null]
+  apellido String [not null]
+  telefono String [not null]
+  direccion String [not null]
+  email String [not null]
+  tipoClienteId Int
+  tipoCliente tipoCliente
+}
+
+Table tipoCliente {
+  id Int [pk]
+  nombre String [not null]
+  clientes Cliente [not null]
+  Descuento Descuento [not null]
+}
+
+Table Rango {
+  id Int [pk]
+  nombre String [not null]
+  min Int [not null]
+  max Int [not null]
+  Descuento Descuento [not null]
+}
+
+Table Descuento {
+  nombre String [not null]
+  porcentaje Int [not null]
+  rangoId Int [not null]
+  tipoClienteId Int [not null]
+  productoId Int [not null]
+  producto Producto [not null]
+  tipoCliente tipoCliente [not null]
+  rango Rango [not null]
+
+  indexes {
+    (rangoId, productoId, tipoClienteId) [pk]
+  }
+}
+
+Table Sucursal {
+  id Int [pk]
+  nombre String [not null]
+  direccion String [not null]
+  telefono String [not null]
+  email String [not null]
+}
+
+Ref: Cliente.tipoClienteId > tipoCliente.id
+
+Ref: Descuento.productoId > Producto.id
+
+Ref: Descuento.tipoClienteId > tipoCliente.id
+
+Ref: Descuento.rangoId > Rango.id

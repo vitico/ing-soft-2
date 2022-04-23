@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model Clinica {
+//   id        Int    @id
+//   nombre    String
+//   direccion String
+//   telefono  String
+// }
+
+// model Enfermera {
+//   id                           Int                            @id
+//   nombre                       String
+//   telefono                     String
+//   EquipoVsEnfermera            EquipoVsEnfermera[]
+//   HabilidadVsEnfermera         HabilidadVsEnfermera[]
+//   HabilidadVsEnfermeraVsEquipo HabilidadVsEnfermeraVsEquipo[]
+// }
+
+// model Especializacion {
+//   id                      Int                       @id
+//   nombre                  String
+//   EquipoVsEspecializacion EquipoVsEspecializacion[]
+// }
+
+// model Equipo {
+//   id                           Int                            @id
+//   nombre                       String
+//   marca                        String
+//   modelo                       String
+//   numSerie                     String
+//   EquipoVsEspecializacion      EquipoVsEspecializacion[]
+//   EquipoVsEnfermera            EquipoVsEnfermera[]
+//   HabilidadVsEnfermeraVsEquipo HabilidadVsEnfermeraVsEquipo[]
+// }
+
+// model EquipoVsEspecializacion {
+//   id                Int @id
+//   equipoId          Int
+//   especializacionId Int
+
+//   Equipo          Equipo          @relation(fields: [equipoId], references: [id])
+//   Especializacion Especializacion @relation(fields: [especializacionId], references: [id])
+// }
+
+// model EquipoVsEnfermera {
+//   id          Int @id
+//   equipoId    Int
+//   enfermeraId Int
+
+//   Equipo    Equipo    @relation(fields: [equipoId], references: [id])
+//   Enfermera Enfermera @relation(fields: [enfermeraId], references: [id])
+// }
+
+// model Habilidad {
+//   id                           Int                            @id
+//   nombre                       String
+//   HabilidadVsEnfermera         HabilidadVsEnfermera[]
+//   HabilidadVsEnfermeraVsEquipo HabilidadVsEnfermeraVsEquipo[]
+// }
+
+// model HabilidadVsEnfermera {
+//   enfermera Enfermera @relation(fields: [enfermeraId], references: [id])
+//   habilidad Habilidad @relation(fields: [habilidadId], references: [id])
+
+//   enfermeraId Int
+//   habilidadId Int
+//   descripcion String
+//   @@id([enfermeraId, habilidadId])
+// }
+
+// model HabilidadVsEnfermeraVsEquipo {
+//   enfermera Enfermera @relation(fields: [enfermeraId], references: [id])
+//   habilidad Habilidad @relation(fields: [habilidadId], references: [id])
+//   equipo    Equipo    @relation(fields: [equipoId], references: [id])
+
+//   enfermeraId Int
+//   habilidadId Int
+//   equipoId    Int
+//   descripcion String
+//   @@id([enfermeraId, habilidadId, equipoId])
+// }

@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto11.dbml"
+  projectName         = "punto 11 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto11"
+}
+
+model Zona {
+  id               Int                @id
+  nombre           String
+  descripcion      String
+  LocalizacionZona LocalizacionZona[]
+  MovimientoTicket MovimientoTicket[]
+}
+
+model LocalizacionZona {
+  id          Int    @id
+  descripcion String
+  zonaId      Int
+
+  zona                    Zona                      @relation(fields: [zonaId], references: [id])
+  MovimientosLocalizacion MovimientosLocalizacion[]
+}
+
+model MovimientosLocalizacion {
+  id                  Int              @id
+  descripcion         String
+  localizacionId      Int
+  movimientoId        Int
+  fecha               DateTime
+  estado              Boolean
+  realizadoPor        Trabajador       @relation(fields: [trabajadorTerceroId], references: [terceroId])
+  localizacion        LocalizacionZona @relation(fields: [localizacionId], references: [id])
+  movimiento          MovimientoTicket @relation(fields: [movimientoId], references: [id])
+  trabajadorTerceroId Int
+}
+
+model Tercero {
+  id          Int          @id
+  nombre      String
+  descripcion String
+  Trabajador  Trabajador[]
+  Cliente     Cliente[]
+}
+
+model Trabajador {
+  terceroId Int
+  tercero   Tercero @relation(fields: [terceroId], references: [id])
+
+  MovimientoTicket        MovimientoTicket[]
+  MovimientosLocalizacion MovimientosLocalizacion[]
+  @@id([terceroId])
+}
+
+model Cliente {
+  terceroId Int
+  tercero   Tercero @relation(fields: [terceroId], references: [id])
+
+  Ticket Ticket[]
+  @@id([terceroId])
+}
+
+model Ticket {
+  id             String  @id
+  fecha          String
+  fechaCaducidad String
+  estado         Boolean
+  clienteId      Int
+  cliente        Cliente @relation(fields: [clienteId], references: [terceroId])
+
+  MovimientoTicket MovimientoTicket[]
+}
+
+model MovimientoTicket {
+  id                  Int          @id
+  estado              EstadoTicket // 0 - pendiente, 1 - en proceso, 2 - finalizado
+  ticketId            String
+  zonaId              Int
+  fecha               String
+  trabajadorTerceroId Int
+
+  ticket                  Ticket                    @relation(fields: [ticketId], references: [id])
+  zona                    Zona                      @relation(fields: [zonaId], references: [id])
+  agregadoPor             Trabajador                @relation(fields: [trabajadorTerceroId], references: [terceroId])
+  MovimientosLocalizacion MovimientosLocalizacion[]
+}
+
+enum EstadoTicket {
+  PENDIENTE
+  EN_PROCESO
+  FINALIZADO
+}

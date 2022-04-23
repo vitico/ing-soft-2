@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto12.dbml"
+  projectName         = "punto 12 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto12"
+}
+
+model Product {
+  id      Int       @id
+  name    String
+  Problem Problem[]
+  Pedido  Pedido[]
+}
+
+model Problem {
+  id              Int               @id
+  name            String
+  product         Product           @relation(fields: [productId], references: [id])
+  productId       Int
+  SolucionProblem SolucionProblem[]
+  DetallePedido   DetallePedido[]
+}
+
+model Process {
+  id              Int               @id
+  name            String
+  machine         Machine           @relation(fields: [machineId], references: [id])
+  machineId       Int
+  SolucionProblem SolucionProblem[]
+
+  dependsOn         Process[]           @relation(name: "process_depends_on")
+  Process           Process?            @relation(name: "process_depends_on", fields: [processId], references: [id])
+  processId         Int?
+  AsignacionProceso AsignacionProceso[]
+}
+
+model Machine {
+  id                 Int                  @id
+  name               String
+  Process            Process[]
+  MachineRequirement MachineRequirement[]
+}
+
+model MachineRequirement {
+  Conocimiento   Conocimiento @relation(fields: [conocimientoId], references: [id])
+  machine        Machine      @relation(fields: [machineId], references: [id])
+  machineId      Int
+  conocimientoId Int
+
+  @@id([machineId, conocimientoId])
+}
+
+model Conocimiento {
+  id   Int    @id
+  name String
+
+  MachineRequirement   MachineRequirement[]
+  EmployeeConocimiento EmployeeConocimiento[]
+}
+
+model SolucionProblem {
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId Int
+  process   Process @relation(fields: [processId], references: [id])
+  processId Int
+
+
+  MaterialSolucionProblema MaterialSolucionProblema[]
+  @@id([problemId, processId])
+}
+
+model MaterialSolucionProblema {
+  solucionProblem          SolucionProblem @relation(fields: [solucionProblemProblemId, solucionProblemProcessId], references: [problemId, processId])
+  material                 Material        @relation(fields: [materialId], references: [id])
+  materialId               Int
+  solucionProblemProblemId Int
+  solucionProblemProcessId Int
+  cantidad                 Int
+
+  @@id([solucionProblemProblemId, solucionProblemProcessId, materialId])
+}
+
+model Material {
+  id                       Int                        @id
+  name                     String
+  MaterialSolucionProblema MaterialSolucionProblema[]
+  DetalleAlmacen           DetalleAlmacen[]
+  SuplidorMaterial         SuplidorMaterial[]
+}
+
+model Almacen {
+  id             Int              @id
+  name           String
+  DetalleAlmacen DetalleAlmacen[]
+}
+
+model DetalleAlmacen {
+  almace     Almacen  @relation(fields: [almacenId], references: [id])
+  model      Material @relation(fields: [materialId], references: [id])
+  cantidad   Int
+  almacenId  Int
+  materialId Int
+
+  @@id([almacenId, materialId])
+}
+
+model Tercero {
+  id       Int        @id
+  name     String
+  contact  Contact[]
+  Employee Employee[]
+  Client   Client[]
+  Suplidor Suplidor[]
+}
+
+model Contact {
+  id            Int    @id
+  name          String
+  contactTypeId Int
+  terceroId     Int
+
+  type    ContactType @relation(fields: [contactTypeId], references: [id])
+  Tercero Tercero     @relation(fields: [terceroId], references: [id])
+}
+
+model ContactType {
+  id   Int    @id
+  name String
+
+  Contact Contact[]
+}
+
+model Employee {
+  tecero    Tercero @relation(fields: [terceroId], references: [id])
+  terceroId Int
+  // tomar en cuenta el horario, y los otros procesos ya asignados
+
+  EmployeeConocimiento EmployeeConocimiento[]
+  AsignacionProceso    AsignacionProceso[]
+  @@id([terceroId])
+}
+
+model EmployeeConocimiento {
+  employee       Employee     @relation(fields: [employeeId], references: [terceroId])
+  conocimiento   Conocimiento @relation(fields: [conocimientoId], references: [id])
+  conocimientoId Int
+
+  employeeId Int
+  @@id([employeeId, conocimientoId])
+}
+
+model Client {
+  tercero   Tercero @relation(fields: [terceroId], references: [id])
+  terceroId Int
+
+  Pedido Pedido[]
+  @@id([terceroId])
+}
+
+model Pedido {
+  id                Int                 @id
+  name              String
+  Client            Client              @relation(fields: [clientTerceroId], references: [terceroId])
+  clientTerceroId   Int
+  product           Product             @relation(fields: [productId], references: [id])
+  productId         Int
+  DetallePedido     DetallePedido[]
+  AsignacionProceso AsignacionProceso[]
+}
+
+model DetallePedido {
+  pedido  Pedido  @relation(fields: [pedidoId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
+  status  Int
+
+  pedidoId  Int
+  problemId Int
+
+  @@id([pedidoId, problemId])
+}
+
+model Suplidor {
+  tercero   Tercero @relation(fields: [terceroId], references: [id])
+  terceroId Int
+
+
+
+  SuplidorMaterial SuplidorMaterial[]
+  @@id([terceroId])
+}
+
+model SuplidorMaterial {
+  cantidad Int
+
+  suplidor Suplidor @relation(fields: [suplidorTerceroId], references: [terceroId])
+  material Material @relation(fields: [materialId], references: [id])
+
+  suplidorTerceroId Int
+  materialId        Int
+
+  @@id([suplidorTerceroId, materialId])
+}
+
+model AsignacionProceso {
+  name     String
+  Employee Employee @relation(fields: [employeeId], references: [terceroId])
+  Process  Process  @relation(fields: [processId], references: [id])
+  Pedido   Pedido   @relation(fields: [pedidoId], references: [id])
+  date     DateTime
+  estado   Int
+  duracion Int
+
+  employeeId Int
+  processId  Int
+  pedidoId   Int
+  @@id([employeeId, processId])
+}

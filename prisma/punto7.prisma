@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto7.dbml"
+  projectName         = "punto 7 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto7"
+}
+
+model Material {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  description             String
+  price                   Int
+  ProductMaterial         ProductMaterial[]
+  DetalleMovimientoPedido DetalleMovimientoPedido[]
+}
+
+model Product {
+  id               Int                @id @default(autoincrement())
+  name             String
+  description      String
+  price            Float
+  ProductMaterial  ProductMaterial[]
+  DetallePedido    DetallePedido[]
+  MovimientoPedido MovimientoPedido[]
+}
+
+model ProductMaterial {
+  productId   Int
+  materialId  Int
+  quantity    Int
+  machineId   Int
+  description String
+
+  product  Product  @relation(fields: [productId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+  machine  Machine  @relation(fields: [machineId], references: [id])
+  @@id([productId, materialId])
+}
+
+model Machine {
+  id              Int               @id
+  name            String
+  description     String
+  ProductMaterial ProductMaterial[]
+}
+
+model Pedido {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  tercero     Tercero @relation(fields: [terceroId], references: [id])
+
+  terceroId        Int
+  DetallePedido    DetallePedido[]
+  MovimientoPedido MovimientoPedido[]
+}
+
+model DetallePedido {
+  pedidoId    Int
+  productId   Int
+  quantity    Int
+  description String
+  price       Float
+
+  pedido  Pedido  @relation(fields: [pedidoId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@id([pedidoId, productId])
+}
+
+model Tercero {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  Worker      Worker?
+  Pedido      Pedido[]
+}
+
+model Worker {
+  terceroId        Int                @id
+  tercero          Tercero            @relation(fields: [terceroId], references: [id])
+  MovimientoPedido MovimientoPedido[]
+}
+
+model MovimientoPedido {
+  pedidoId    Int
+  productId   Int
+  workerId    Int
+  quantity    Int
+  description String
+  status      Int
+  startTime   DateTime
+  endTime     DateTime
+
+
+  pedido                  Pedido                    @relation(fields: [pedidoId], references: [id])
+  product                 Product                   @relation(fields: [productId], references: [id])
+  worker                  Worker                    @relation(fields: [workerId], references: [terceroId])
+  DetalleMovimientoPedido DetalleMovimientoPedido[]
+  @@id([pedidoId, productId])
+}
+
+model DetalleMovimientoPedido {
+  id            Int              @id @default(autoincrement())
+  movimiento    MovimientoPedido @relation(fields: [movimientoPedidoPedidoId, movimientoPedidoProductId], references: [pedidoId, productId])
+  materialUsado Material         @relation(fields: [materialId], references: [id])
+
+
+  movimientoPedidoPedidoId  Int
+  movimientoPedidoProductId Int
+
+  materialId Int
+}

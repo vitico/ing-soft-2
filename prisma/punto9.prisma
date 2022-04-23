@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto9.dbml"
+  projectName         = "punto 9 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto9"
+}
+
+model Municipio {
+  id           Int            @id
+  nombre       String
+  Ayuntamiento Ayuntamiento[]
+}
+
+model Ayuntamiento {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  municipioId Int
+  Letrero     Letrero[]
+  Municipio   Municipio @relation(fields: [municipioId], references: [id])
+}
+
+model Letrero {
+  id             Int          @id @default(autoincrement())
+  tamano         Float
+  ayuntamientoId Int
+  materialId     Int
+  unidadId       Int
+  ayuntamiento   Ayuntamiento @relation(fields: [ayuntamientoId], references: [id])
+  unidadMedida   Unidad       @relation(fields: [unidadId], references: [id])
+  Material       Material     @relation(fields: [materialId], references: [id])
+}
+
+model Material {
+  id             Int              @id @default(autoincrement())
+  nombre         String
+  Letrero        Letrero[]
+  MaterialUnidad MaterialUnidad[]
+}
+
+model MaterialUnidad {
+  id         Int      @id @default(autoincrement())
+  material   Material @relation(fields: [materialId], references: [id])
+  unidad     Unidad   @relation(fields: [unidadId], references: [id])
+  materialId Int
+  unidadId   Int
+  costo      Float
+}
+
+model Unidad {
+  id         Int    @id @default(autoincrement())
+  nombre     String
+  referencia Float
+  unidadId   Int?
+
+  Unidad         Unidad?          @relation("unidad", fields: [unidadId], references: [id])
+  Unidades       Unidad[]         @relation("unidad")
+  MaterialUnidad MaterialUnidad[]
+  Letrero        Letrero[]
+}

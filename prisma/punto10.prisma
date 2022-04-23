@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto10.dbml"
+  projectName         = "punto 10 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto10"
+}
+
+model Trabajador {
+  id       Int    @id
+  nombre   String
+  apellido String
+
+  TrabajadorCapacidad TrabajadorCapacidad[]
+}
+
+model Maquina {
+  id               Int                @id
+  nombre           String
+  descripcion      String
+  MaquinaCapacidad MaquinaCapacidad[]
+  AreaMaquina      AreaMaquina[]
+}
+
+model MaquinaCapacidad {
+  maquina     Maquina   @relation(fields: [maquinaId], references: [id])
+  capacidad   Capacidad @relation(fields: [capacidadId], references: [id])
+  maquinaId   Int
+  capacidadId Int
+
+  @@id([maquinaId, capacidadId])
+}
+
+model Capacidad {
+  id                  Int                   @id
+  nombre              String
+  descripcion         String
+  MaquinaCapacidad    MaquinaCapacidad[]
+  TrabajadorCapacidad TrabajadorCapacidad[]
+}
+
+model TrabajadorCapacidad {
+  trabajador   Trabajador @relation(fields: [trabajadorId], references: [id])
+  capacidad    Capacidad  @relation(fields: [capacidadId], references: [id])
+  trabajadorId Int
+  capacidadId  Int
+
+  @@id([trabajadorId, capacidadId])
+}
+
+model Area {
+  id          Int           @id
+  nombre      String
+  descripcion String
+  AreaMaquina AreaMaquina[]
+}
+
+model AreaMaquina {
+  area      Area    @relation(fields: [areaId], references: [id])
+  maquina   Maquina @relation(fields: [maquinaId], references: [id])
+  areaId    Int
+  maquinaId Int
+
+  @@id([areaId, maquinaId])
+}

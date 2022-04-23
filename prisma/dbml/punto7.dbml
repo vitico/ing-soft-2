@@ -1,0 +1,139 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 7 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Material {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  price Int [not null]
+  ProductMaterial ProductMaterial [not null]
+  DetalleMovimientoPedido DetalleMovimientoPedido [not null]
+}
+
+Table Product {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  price Float [not null]
+  ProductMaterial ProductMaterial [not null]
+  DetallePedido DetallePedido [not null]
+  MovimientoPedido MovimientoPedido [not null]
+}
+
+Table ProductMaterial {
+  productId Int [not null]
+  materialId Int [not null]
+  quantity Int [not null]
+  machineId Int [not null]
+  description String [not null]
+  product Product [not null]
+  material Material [not null]
+  machine Machine [not null]
+
+  indexes {
+    (productId, materialId) [pk]
+  }
+}
+
+Table Machine {
+  id Int [pk]
+  name String [not null]
+  description String [not null]
+  ProductMaterial ProductMaterial [not null]
+}
+
+Table Pedido {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  tercero Tercero [not null]
+  terceroId Int [not null]
+  DetallePedido DetallePedido [not null]
+  MovimientoPedido MovimientoPedido [not null]
+}
+
+Table DetallePedido {
+  pedidoId Int [not null]
+  productId Int [not null]
+  quantity Int [not null]
+  description String [not null]
+  price Float [not null]
+  pedido Pedido [not null]
+  product Product [not null]
+
+  indexes {
+    (pedidoId, productId) [pk]
+  }
+}
+
+Table Tercero {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  Worker Worker
+  Pedido Pedido [not null]
+}
+
+Table Worker {
+  terceroId Int [pk]
+  tercero Tercero [not null]
+  MovimientoPedido MovimientoPedido [not null]
+}
+
+Table MovimientoPedido {
+  pedidoId Int [not null]
+  productId Int [not null]
+  workerId Int [not null]
+  quantity Int [not null]
+  description String [not null]
+  status Int [not null]
+  startTime DateTime [not null]
+  endTime DateTime [not null]
+  pedido Pedido [not null]
+  product Product [not null]
+  worker Worker [not null]
+  DetalleMovimientoPedido DetalleMovimientoPedido [not null]
+
+  indexes {
+    (pedidoId, productId) [pk]
+  }
+}
+
+Table DetalleMovimientoPedido {
+  id Int [pk, increment]
+  movimiento MovimientoPedido [not null]
+  materialUsado Material [not null]
+  movimientoPedidoPedidoId Int [not null]
+  movimientoPedidoProductId Int [not null]
+  materialId Int [not null]
+}
+
+Ref: ProductMaterial.productId > Product.id
+
+Ref: ProductMaterial.materialId > Material.id
+
+Ref: ProductMaterial.machineId > Machine.id
+
+Ref: Pedido.terceroId > Tercero.id
+
+Ref: DetallePedido.pedidoId > Pedido.id
+
+Ref: DetallePedido.productId > Product.id
+
+Ref: Worker.terceroId - Tercero.id
+
+Ref: MovimientoPedido.pedidoId > Pedido.id
+
+Ref: MovimientoPedido.productId > Product.id
+
+Ref: MovimientoPedido.workerId > Worker.terceroId
+
+Ref: DetalleMovimientoPedido.(movimientoPedidoPedidoId, movimientoPedidoProductId) > MovimientoPedido.(pedidoId, productId)
+
+Ref: DetalleMovimientoPedido.materialId > Material.id

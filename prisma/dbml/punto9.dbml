@@ -1,0 +1,74 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 9 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Municipio {
+  id Int [pk]
+  nombre String [not null]
+  Ayuntamiento Ayuntamiento [not null]
+}
+
+Table Ayuntamiento {
+  id Int [pk, increment]
+  nombre String [not null]
+  municipioId Int [not null]
+  Letrero Letrero [not null]
+  Municipio Municipio [not null]
+}
+
+Table Letrero {
+  id Int [pk, increment]
+  tamano Float [not null]
+  ayuntamientoId Int [not null]
+  materialId Int [not null]
+  unidadId Int [not null]
+  ayuntamiento Ayuntamiento [not null]
+  unidadMedida Unidad [not null]
+  Material Material [not null]
+}
+
+Table Material {
+  id Int [pk, increment]
+  nombre String [not null]
+  Letrero Letrero [not null]
+  MaterialUnidad MaterialUnidad [not null]
+}
+
+Table MaterialUnidad {
+  id Int [pk, increment]
+  material Material [not null]
+  unidad Unidad [not null]
+  materialId Int [not null]
+  unidadId Int [not null]
+  costo Float [not null]
+}
+
+Table Unidad {
+  id Int [pk, increment]
+  nombre String [not null]
+  referencia Float [not null]
+  unidadId Int
+  Unidad Unidad
+  Unidades Unidad [not null]
+  MaterialUnidad MaterialUnidad [not null]
+  Letrero Letrero [not null]
+}
+
+Ref: Ayuntamiento.municipioId > Municipio.id
+
+Ref: Letrero.ayuntamientoId > Ayuntamiento.id
+
+Ref: Letrero.unidadId > Unidad.id
+
+Ref: Letrero.materialId > Material.id
+
+Ref: MaterialUnidad.materialId > Material.id
+
+Ref: MaterialUnidad.unidadId > Unidad.id
+
+Ref: Unidad.unidadId - Unidad.id

@@ -1,0 +1,82 @@
+{
+  "name": "ing-soft",
+  "packageManager": "yarn@3.2.0",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "serve-docs": "serve -s prisma/docs -p 3000",
+    "prisma:generate": "npm-run-all -p \"prisma:generate:*\"",
+    "prisma:generate:punto7": "prisma generate --schema=prisma/punto7.prisma",
+    "prisma:generate:punto8": "prisma generate --schema=prisma/punto8.prisma",
+    "prisma:generate:punto9": "prisma generate --schema=prisma/punto9.prisma",
+    "prisma:generate:punto10": "prisma generate --schema=prisma/punto10.prisma",
+    "prisma:generate:punto11": "prisma generate --schema=prisma/punto11.prisma",
+    "prisma:generate:punto12": "prisma generate --schema=prisma/punto12.prisma",
+    "prisma:db:push": "npm-run-all -p \"prisma:db:push:*\"",
+    "prisma:db:push:punto7": "prisma db push --schema=prisma/punto7.prisma",
+    "prisma:db:push:punto8": "prisma db push --schema=prisma/punto8.prisma",
+    "prisma:db:push:punto9": "prisma db push --schema=prisma/punto9.prisma",
+    "prisma:db:push:punto10": "prisma db push --schema=prisma/punto10.prisma",
+    "prisma:db:push:punto11": "prisma db push --schema=prisma/punto11.prisma",
+    "prisma:db:push:punto12": "prisma db push --schema=prisma/punto12.prisma"
+  },
+  "dependencies": {
+    "@mantine/core": "^4.1.2",
+    "@mantine/form": "^4.1.2",
+    "@mantine/hooks": "^4.1.2",
+    "@mantine/modals": "^4.1.2",
+    "@mantine/notifications": "^4.1.2",
+    "@mantine/prism": "^4.1.2",
+    "@mantine/rte": "^4.1.2",
+    "@mantine/spotlight": "^4.1.2",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.26",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^17.0.14",
+    "grommet": "^2.22.0",
+    "html2canvas": "^1.4.1",
+    "polished": "^4.2.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "6",
+    "react-scripts": "5.0.0",
+    "styled-components": "^5.3.5",
+    "tabler-icons-react": "^1.46.0",
+    "typescript": "^4.6.3",
+    "use-react-screenshot": "^3.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^8.14.0",
+    "npm-run-all": "^4.1.5",
+    "prisma": "^3.12.0",
+    "prisma-dbml-generator": "^0.9.0",
+    "prisma-docs-generator": "^0.5.0",
+    "prisma-erd-generator": "^0.11.0",
+    "react-scripts": "^5.0.0",
+    "serve": "^13.0.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

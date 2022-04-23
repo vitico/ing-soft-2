@@ -1,0 +1,115 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 11 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Zona {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  LocalizacionZona LocalizacionZona [not null]
+  MovimientoTicket MovimientoTicket [not null]
+}
+
+Table LocalizacionZona {
+  id Int [pk]
+  descripcion String [not null]
+  zonaId Int [not null]
+  zona Zona [not null]
+  MovimientosLocalizacion MovimientosLocalizacion [not null]
+}
+
+Table MovimientosLocalizacion {
+  id Int [pk]
+  descripcion String [not null]
+  localizacionId Int [not null]
+  movimientoId Int [not null]
+  fecha DateTime [not null]
+  estado Boolean [not null]
+  realizadoPor Trabajador [not null]
+  localizacion LocalizacionZona [not null]
+  movimiento MovimientoTicket [not null]
+  trabajadorTerceroId Int [not null]
+}
+
+Table Tercero {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  Trabajador Trabajador [not null]
+  Cliente Cliente [not null]
+}
+
+Table Trabajador {
+  terceroId Int [pk]
+  tercero Tercero [not null]
+  MovimientoTicket MovimientoTicket [not null]
+  MovimientosLocalizacion MovimientosLocalizacion [not null]
+
+  indexes {
+    (terceroId) [pk]
+  }
+}
+
+Table Cliente {
+  terceroId Int [pk]
+  tercero Tercero [not null]
+  Ticket Ticket [not null]
+
+  indexes {
+    (terceroId) [pk]
+  }
+}
+
+Table Ticket {
+  id String [pk]
+  fecha String [not null]
+  fechaCaducidad String [not null]
+  estado Boolean [not null]
+  clienteId Int [not null]
+  cliente Cliente [not null]
+  MovimientoTicket MovimientoTicket [not null]
+}
+
+Table MovimientoTicket {
+  id Int [pk]
+  estado EstadoTicket [not null]
+  ticketId String [not null]
+  zonaId Int [not null]
+  fecha String [not null]
+  trabajadorTerceroId Int [not null]
+  ticket Ticket [not null]
+  zona Zona [not null]
+  agregadoPor Trabajador [not null]
+  MovimientosLocalizacion MovimientosLocalizacion [not null]
+}
+
+Enum EstadoTicket {
+  PENDIENTE
+  EN_PROCESO
+  FINALIZADO
+}
+
+Ref: LocalizacionZona.zonaId > Zona.id
+
+Ref: MovimientosLocalizacion.trabajadorTerceroId > Trabajador.terceroId
+
+Ref: MovimientosLocalizacion.localizacionId > LocalizacionZona.id
+
+Ref: MovimientosLocalizacion.movimientoId > MovimientoTicket.id
+
+Ref: Trabajador.terceroId > Tercero.id
+
+Ref: Cliente.terceroId > Tercero.id
+
+Ref: Ticket.clienteId > Cliente.terceroId
+
+Ref: MovimientoTicket.ticketId > Ticket.id
+
+Ref: MovimientoTicket.zonaId > Zona.id
+
+Ref: MovimientoTicket.trabajadorTerceroId > Trabajador.terceroId

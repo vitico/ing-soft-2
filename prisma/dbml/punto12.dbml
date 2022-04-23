@@ -1,0 +1,284 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 12 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Product {
+  id Int [pk]
+  name String [not null]
+  Problem Problem [not null]
+  Pedido Pedido [not null]
+}
+
+Table Problem {
+  id Int [pk]
+  name String [not null]
+  product Product [not null]
+  productId Int [not null]
+  SolucionProblem SolucionProblem [not null]
+  DetallePedido DetallePedido [not null]
+}
+
+Table Process {
+  id Int [pk]
+  name String [not null]
+  machine Machine [not null]
+  machineId Int [not null]
+  SolucionProblem SolucionProblem [not null]
+  dependsOn Process [not null]
+  Process Process
+  processId Int
+  AsignacionProceso AsignacionProceso [not null]
+}
+
+Table Machine {
+  id Int [pk]
+  name String [not null]
+  Process Process [not null]
+  MachineRequirement MachineRequirement [not null]
+}
+
+Table MachineRequirement {
+  Conocimiento Conocimiento [not null]
+  machine Machine [not null]
+  machineId Int [not null]
+  conocimientoId Int [not null]
+
+  indexes {
+    (machineId, conocimientoId) [pk]
+  }
+}
+
+Table Conocimiento {
+  id Int [pk]
+  name String [not null]
+  MachineRequirement MachineRequirement [not null]
+  EmployeeConocimiento EmployeeConocimiento [not null]
+}
+
+Table SolucionProblem {
+  problem Problem [not null]
+  problemId Int [not null]
+  process Process [not null]
+  processId Int [not null]
+  MaterialSolucionProblema MaterialSolucionProblema [not null]
+
+  indexes {
+    (problemId, processId) [pk]
+  }
+}
+
+Table MaterialSolucionProblema {
+  solucionProblem SolucionProblem [not null]
+  material Material [not null]
+  materialId Int [not null]
+  solucionProblemProblemId Int [not null]
+  solucionProblemProcessId Int [not null]
+  cantidad Int [not null]
+
+  indexes {
+    (solucionProblemProblemId, solucionProblemProcessId, materialId) [pk]
+  }
+}
+
+Table Material {
+  id Int [pk]
+  name String [not null]
+  MaterialSolucionProblema MaterialSolucionProblema [not null]
+  DetalleAlmacen DetalleAlmacen [not null]
+  SuplidorMaterial SuplidorMaterial [not null]
+}
+
+Table Almacen {
+  id Int [pk]
+  name String [not null]
+  DetalleAlmacen DetalleAlmacen [not null]
+}
+
+Table DetalleAlmacen {
+  almace Almacen [not null]
+  model Material [not null]
+  cantidad Int [not null]
+  almacenId Int [not null]
+  materialId Int [not null]
+
+  indexes {
+    (almacenId, materialId) [pk]
+  }
+}
+
+Table Tercero {
+  id Int [pk]
+  name String [not null]
+  contact Contact [not null]
+  Employee Employee [not null]
+  Client Client [not null]
+  Suplidor Suplidor [not null]
+}
+
+Table Contact {
+  id Int [pk]
+  name String [not null]
+  contactTypeId Int [not null]
+  terceroId Int [not null]
+  type ContactType [not null]
+  Tercero Tercero [not null]
+}
+
+Table ContactType {
+  id Int [pk]
+  name String [not null]
+  Contact Contact [not null]
+}
+
+Table Employee {
+  tecero Tercero [not null]
+  terceroId Int [pk]
+  EmployeeConocimiento EmployeeConocimiento [not null]
+  AsignacionProceso AsignacionProceso [not null]
+
+  indexes {
+    (terceroId) [pk]
+  }
+}
+
+Table EmployeeConocimiento {
+  employee Employee [not null]
+  conocimiento Conocimiento [not null]
+  conocimientoId Int [not null]
+  employeeId Int [not null]
+
+  indexes {
+    (employeeId, conocimientoId) [pk]
+  }
+}
+
+Table Client {
+  tercero Tercero [not null]
+  terceroId Int [pk]
+  Pedido Pedido [not null]
+
+  indexes {
+    (terceroId) [pk]
+  }
+}
+
+Table Pedido {
+  id Int [pk]
+  name String [not null]
+  Client Client [not null]
+  clientTerceroId Int [not null]
+  product Product [not null]
+  productId Int [not null]
+  DetallePedido DetallePedido [not null]
+  AsignacionProceso AsignacionProceso [not null]
+}
+
+Table DetallePedido {
+  pedido Pedido [not null]
+  problem Problem [not null]
+  status Int [not null]
+  pedidoId Int [not null]
+  problemId Int [not null]
+
+  indexes {
+    (pedidoId, problemId) [pk]
+  }
+}
+
+Table Suplidor {
+  tercero Tercero [not null]
+  terceroId Int [pk]
+  SuplidorMaterial SuplidorMaterial [not null]
+
+  indexes {
+    (terceroId) [pk]
+  }
+}
+
+Table SuplidorMaterial {
+  cantidad Int [not null]
+  suplidor Suplidor [not null]
+  material Material [not null]
+  suplidorTerceroId Int [not null]
+  materialId Int [not null]
+
+  indexes {
+    (suplidorTerceroId, materialId) [pk]
+  }
+}
+
+Table AsignacionProceso {
+  name String [not null]
+  Employee Employee [not null]
+  Process Process [not null]
+  Pedido Pedido [not null]
+  date DateTime [not null]
+  estado Int [not null]
+  duracion Int [not null]
+  employeeId Int [not null]
+  processId Int [not null]
+  pedidoId Int [not null]
+
+  indexes {
+    (employeeId, processId) [pk]
+  }
+}
+
+Ref: Problem.productId > Product.id
+
+Ref: Process.machineId > Machine.id
+
+Ref: Process.processId > Process.id
+
+Ref: MachineRequirement.conocimientoId > Conocimiento.id
+
+Ref: MachineRequirement.machineId > Machine.id
+
+Ref: SolucionProblem.problemId > Problem.id
+
+Ref: SolucionProblem.processId > Process.id
+
+Ref: MaterialSolucionProblema.(solucionProblemProblemId, solucionProblemProcessId) > SolucionProblem.(problemId, processId)
+
+Ref: MaterialSolucionProblema.materialId > Material.id
+
+Ref: DetalleAlmacen.almacenId > Almacen.id
+
+Ref: DetalleAlmacen.materialId > Material.id
+
+Ref: Contact.contactTypeId > ContactType.id
+
+Ref: Contact.terceroId > Tercero.id
+
+Ref: Employee.terceroId > Tercero.id
+
+Ref: EmployeeConocimiento.employeeId > Employee.terceroId
+
+Ref: EmployeeConocimiento.conocimientoId > Conocimiento.id
+
+Ref: Client.terceroId > Tercero.id
+
+Ref: Pedido.clientTerceroId > Client.terceroId
+
+Ref: Pedido.productId > Product.id
+
+Ref: DetallePedido.pedidoId > Pedido.id
+
+Ref: DetallePedido.problemId > Problem.id
+
+Ref: Suplidor.terceroId > Tercero.id
+
+Ref: SuplidorMaterial.suplidorTerceroId > Suplidor.terceroId
+
+Ref: SuplidorMaterial.materialId > Material.id
+
+Ref: AsignacionProceso.employeeId > Employee.terceroId
+
+Ref: AsignacionProceso.processId > Process.id
+
+Ref: AsignacionProceso.pedidoId > Pedido.id

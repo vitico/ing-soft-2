@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto8.dbml"
+  projectName         = "punto 8 - industria textil"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto8"
+}
+
+model Producto {
+  id     Int    @id
+  nombre String
+  precio Int
+
+  Descuento Descuento[]
+}
+
+model Cliente {
+  id            Int    @id
+  nombre        String
+  apellido      String
+  telefono      String
+  direccion     String
+  email         String
+  tipoClienteId Int?
+
+  tipoCliente tipoCliente? @relation(fields: [tipoClienteId], references: [id])
+}
+
+model tipoCliente {
+  id     Int    @id
+  nombre String
+
+  clientes  Cliente[]
+  Descuento Descuento[]
+}
+
+model Rango {
+  id     Int    @id
+  nombre String
+  min    Int
+  max    Int
+
+  Descuento Descuento[]
+}
+
+model Descuento {
+  nombre        String
+  porcentaje    Int
+  rangoId       Int
+  tipoClienteId Int
+  productoId    Int
+
+  producto    Producto    @relation(fields: [productoId], references: [id])
+  tipoCliente tipoCliente @relation(fields: [tipoClienteId], references: [id])
+  rango       Rango       @relation(fields: [rangoId], references: [id])
+
+  @@id([rangoId, productoId, tipoClienteId])
+}
+
+model Sucursal {
+  id        Int    @id
+  nombre    String
+  direccion String
+  telefono  String
+  email     String
+}

@@ -1,0 +1,83 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 10 - industria textil" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Trabajador {
+  id Int [pk]
+  nombre String [not null]
+  apellido String [not null]
+  TrabajadorCapacidad TrabajadorCapacidad [not null]
+}
+
+Table Maquina {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  MaquinaCapacidad MaquinaCapacidad [not null]
+  AreaMaquina AreaMaquina [not null]
+}
+
+Table MaquinaCapacidad {
+  maquina Maquina [not null]
+  capacidad Capacidad [not null]
+  maquinaId Int [not null]
+  capacidadId Int [not null]
+
+  indexes {
+    (maquinaId, capacidadId) [pk]
+  }
+}
+
+Table Capacidad {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  MaquinaCapacidad MaquinaCapacidad [not null]
+  TrabajadorCapacidad TrabajadorCapacidad [not null]
+}
+
+Table TrabajadorCapacidad {
+  trabajador Trabajador [not null]
+  capacidad Capacidad [not null]
+  trabajadorId Int [not null]
+  capacidadId Int [not null]
+
+  indexes {
+    (trabajadorId, capacidadId) [pk]
+  }
+}
+
+Table Area {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  AreaMaquina AreaMaquina [not null]
+}
+
+Table AreaMaquina {
+  area Area [not null]
+  maquina Maquina [not null]
+  areaId Int [not null]
+  maquinaId Int [not null]
+
+  indexes {
+    (areaId, maquinaId) [pk]
+  }
+}
+
+Ref: MaquinaCapacidad.maquinaId > Maquina.id
+
+Ref: MaquinaCapacidad.capacidadId > Capacidad.id
+
+Ref: TrabajadorCapacidad.trabajadorId > Trabajador.id
+
+Ref: TrabajadorCapacidad.capacidadId > Capacidad.id
+
+Ref: AreaMaquina.areaId > Area.id
+
+Ref: AreaMaquina.maquinaId > Maquina.id
