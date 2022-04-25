@@ -19,7 +19,8 @@ model Producto {
   nombre String
   precio Int
 
-  Descuento Descuento[]
+  Descuento      Descuento[]
+  DetalleFactura DetalleFactura[]
 }
 
 model Cliente {
@@ -32,6 +33,7 @@ model Cliente {
   tipoClienteId Int?
 
   tipoCliente tipoCliente? @relation(fields: [tipoClienteId], references: [id])
+  Factura     Factura[]
 }
 
 model tipoCliente {
@@ -62,13 +64,40 @@ model Descuento {
   tipoCliente tipoCliente @relation(fields: [tipoClienteId], references: [id])
   rango       Rango       @relation(fields: [rangoId], references: [id])
 
+  DetalleFactura DetalleFactura[]
   @@id([rangoId, productoId, tipoClienteId])
 }
 
 model Sucursal {
-  id        Int    @id
+  id        Int       @id
   nombre    String
   direccion String
   telefono  String
   email     String
+  Factura   Factura[]
+}
+
+model Factura {
+  id         Int      @id
+  fecha      DateTime
+  clienteId  Int
+  sucursalId Int
+
+  cliente        Cliente          @relation(fields: [clienteId], references: [id])
+  sucursal       Sucursal         @relation(fields: [sucursalId], references: [id])
+  DetalleFactura DetalleFactura[]
+}
+
+model DetalleFactura {
+  id         Int @id
+  cantidad   Int
+  precio     Int
+  productoId Int
+  facturaId  Int
+
+  descuento              Descuento? @relation(fields: [descuentoRangoId, productoId, descuentoTipoClienteId], references: [rangoId, productoId, tipoClienteId])
+  producto               Producto   @relation(fields: [productoId], references: [id])
+  factura                Factura    @relation(fields: [facturaId], references: [id])
+  descuentoRangoId       Int?
+  descuentoTipoClienteId Int?
 }

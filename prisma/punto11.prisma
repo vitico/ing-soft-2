@@ -18,28 +18,28 @@ model Zona {
   id               Int                @id
   nombre           String
   descripcion      String
-  LocalizacionZona LocalizacionZona[]
+  CajaZona         CajaZona[]
   MovimientoTicket MovimientoTicket[]
 }
 
-model LocalizacionZona {
+model CajaZona {
   id          Int    @id
   descripcion String
   zonaId      Int
 
-  zona                    Zona                      @relation(fields: [zonaId], references: [id])
-  MovimientosLocalizacion MovimientosLocalizacion[]
+  zona            Zona              @relation(fields: [zonaId], references: [id])
+  MovimientosCaja MovimientosCaja[]
 }
 
-model MovimientosLocalizacion {
+model MovimientosCaja {
   id                  Int              @id
   descripcion         String
-  localizacionId      Int
+  cajaId              Int
   movimientoId        Int
   fecha               DateTime
   estado              Boolean
   realizadoPor        Trabajador       @relation(fields: [trabajadorTerceroId], references: [terceroId])
-  localizacion        LocalizacionZona @relation(fields: [localizacionId], references: [id])
+  caja                CajaZona         @relation(fields: [cajaId], references: [id])
   movimiento          MovimientoTicket @relation(fields: [movimientoId], references: [id])
   trabajadorTerceroId Int
 }
@@ -56,8 +56,8 @@ model Trabajador {
   terceroId Int
   tercero   Tercero @relation(fields: [terceroId], references: [id])
 
-  MovimientoTicket        MovimientoTicket[]
-  MovimientosLocalizacion MovimientosLocalizacion[]
+  MovimientoTicket MovimientoTicket[]
+  MovimientosCaja  MovimientosCaja[]
   @@id([terceroId])
 }
 
@@ -88,10 +88,10 @@ model MovimientoTicket {
   fecha               String
   trabajadorTerceroId Int
 
-  ticket                  Ticket                    @relation(fields: [ticketId], references: [id])
-  zona                    Zona                      @relation(fields: [zonaId], references: [id])
-  agregadoPor             Trabajador                @relation(fields: [trabajadorTerceroId], references: [terceroId])
-  MovimientosLocalizacion MovimientosLocalizacion[]
+  ticket          Ticket            @relation(fields: [ticketId], references: [id])
+  zona            Zona              @relation(fields: [zonaId], references: [id])
+  agregadoPor     Trabajador        @relation(fields: [trabajadorTerceroId], references: [terceroId])
+  MovimientosCaja MovimientosCaja[]
 }
 
 enum EstadoTicket {

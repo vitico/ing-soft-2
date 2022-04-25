@@ -1,0 +1,138 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 2 - sistema de quejas" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Tercero {
+  id Int [pk]
+  nombre String [not null]
+  apellido String [not null]
+  dni String [not null]
+  TerceroVsContacto TerceroVsContacto [not null]
+  TerceroVsDireccion TerceroVsDireccion [not null]
+  Cliente Cliente
+  Trabajador Trabajador
+}
+
+Table Contacto {
+  id Int [pk]
+  Valor String [not null]
+  TipoContacto TipoContacto
+  tipoContactoId Int
+  TerceroVsContacto TerceroVsContacto [not null]
+}
+
+Table TipoContacto {
+  id Int [pk]
+  nombre String [not null]
+  contactos Contacto [not null]
+}
+
+Table TerceroVsContacto {
+  id Int [pk]
+  tercero Tercero [not null]
+  contacto Contacto [not null]
+  terceroId Int [not null]
+  contactoId Int [not null]
+}
+
+Table Direccion {
+  id Int [pk]
+  calle String [not null]
+  numero String [not null]
+  piso String [not null]
+  departamento String [not null]
+  localidad String [not null]
+  provincia String [not null]
+  pais String [not null]
+  TerceroVsDireccion TerceroVsDireccion [not null]
+}
+
+Table TerceroVsDireccion {
+  id Int [pk]
+  tercero Tercero [not null]
+  direccion Direccion [not null]
+  terceroId Int [not null]
+  direccionId Int [not null]
+}
+
+Table Cliente {
+  idTercero Int [pk]
+  tercero Tercero [not null]
+  Queja Queja [not null]
+  terceroId Int [unique, not null]
+}
+
+Table Trabajador {
+  idTercero Int [pk]
+  tercero Tercero [not null]
+  terceroId Int [unique, not null]
+  MovimientoQueja MovimientoQueja [not null]
+}
+
+Table Queja {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  fechaQueja DateTime [not null]
+  fechaResolucion DateTime [not null]
+  cliente Cliente [not null]
+  clienteIdTercero Int [not null]
+  estado Estado [not null]
+  MovimientoQueja MovimientoQueja [not null]
+  categoria Categoria [not null]
+  categoriaId Int [not null]
+}
+
+Table Categoria {
+  id Int [pk]
+  nombre String [not null]
+  padre Categoria
+  Categoria Categoria [not null]
+  categoriaId Int
+  Queja Queja [not null]
+}
+
+Table MovimientoQueja {
+  id Int [pk]
+  fecha DateTime [not null]
+  descripcion String [not null]
+  Queja Queja [not null]
+  quejaId Int [not null]
+  Estado Estado [not null]
+  realizadoPor Trabajador [not null]
+  trabajadorIdTercero Int [not null]
+}
+
+Enum Estado {
+  PENDIENTE
+  RESUELTA
+}
+
+Ref: Contacto.tipoContactoId > TipoContacto.id
+
+Ref: TerceroVsContacto.terceroId > Tercero.id
+
+Ref: TerceroVsContacto.contactoId > Contacto.id
+
+Ref: TerceroVsDireccion.terceroId > Tercero.id
+
+Ref: TerceroVsDireccion.direccionId > Direccion.id
+
+Ref: Cliente.terceroId - Tercero.id
+
+Ref: Trabajador.terceroId - Tercero.id
+
+Ref: Queja.clienteIdTercero > Cliente.idTercero
+
+Ref: Queja.categoriaId > Categoria.id
+
+Ref: Categoria.categoriaId - Categoria.id
+
+Ref: MovimientoQueja.quejaId > Queja.id
+
+Ref: MovimientoQueja.trabajadorIdTercero > Trabajador.idTercero

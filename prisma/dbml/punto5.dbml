@@ -1,0 +1,171 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "punto 5 - sistema de cobro" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table Tercero {
+  id Int [pk]
+  nombre String [not null]
+  apellido String [not null]
+  dni String [not null]
+  TerceroVsContacto TerceroVsContacto [not null]
+  TerceroVsDireccion TerceroVsDireccion [not null]
+  Cliente Cliente
+  Trabajador Trabajador
+  clienteTerceroId Int
+}
+
+Table Contacto {
+  id Int [pk]
+  Valor String [not null]
+  TipoContacto TipoContacto
+  tipoContactoId Int
+  TerceroVsContacto TerceroVsContacto [not null]
+}
+
+Table TipoContacto {
+  id Int [pk]
+  nombre String [not null]
+  contactos Contacto [not null]
+}
+
+Table TerceroVsContacto {
+  id Int [pk]
+  tercero Tercero [not null]
+  contacto Contacto [not null]
+  terceroId Int [not null]
+  contactoId Int [not null]
+}
+
+Table Direccion {
+  id Int [pk]
+  calle String [not null]
+  numero String [not null]
+  piso String [not null]
+  departamento String [not null]
+  localidad String [not null]
+  provincia String [not null]
+  pais String [not null]
+  TerceroVsDireccion TerceroVsDireccion [not null]
+}
+
+Table TerceroVsDireccion {
+  id Int [pk]
+  tercero Tercero [not null]
+  direccion Direccion [not null]
+  terceroId Int [not null]
+  direccionId Int [not null]
+}
+
+Table Producto {
+  id Int [pk]
+  nombre String [not null]
+  precio Float [not null]
+  ProductoVsCategoria ProductoVsCategoria [not null]
+  DetalleFactura DetalleFactura [not null]
+}
+
+Table Categoria {
+  id Int [pk]
+  nombre String [not null]
+  ProductoVsCategoria ProductoVsCategoria [not null]
+}
+
+Table ProductoVsCategoria {
+  id Int [pk]
+  producto Producto [not null]
+  categoria Categoria [not null]
+  productoId Int [not null]
+  categoriaId Int [not null]
+}
+
+Table Factura {
+  id Int [pk]
+  numero String [not null]
+  fecha DateTime [not null]
+  detalleFactura DetalleFactura [not null]
+  OrdenCobro OrdenCobro [not null]
+}
+
+Table DetalleFactura {
+  id Int [pk]
+  factura Factura [not null]
+  producto Producto [not null]
+  cantidad Int [not null]
+  precio Float [not null]
+  facturaId Int [not null]
+  productoId Int [not null]
+}
+
+Table OrdenCobro {
+  id Int [pk]
+  numero String [not null]
+  fecha DateTime [not null]
+  factura Factura [not null]
+  facturaId Int [not null]
+}
+
+Table Cliente {
+  tercero Tercero [not null]
+  terceroId Int [pk]
+}
+
+Table Trabajador {
+  tercero Tercero [not null]
+  terceroId Int [pk]
+}
+
+Table Horario {
+  id Int [pk]
+  nombre String [not null]
+  DetalleHorario DetalleHorario [not null]
+}
+
+Table DetalleHorario {
+  id Int [pk]
+  horario Horario [not null]
+  horaInicio DateTime [not null]
+  horaFin DateTime [not null]
+  dia FormatoDia [not null]
+  horarioId Int [not null]
+  trabajadorId Int [not null]
+  diaId Int [not null]
+}
+
+Table FormatoDia {
+  id Int [pk]
+  nombre String [not null]
+  DetalleHorario DetalleHorario [not null]
+}
+
+Ref: Contacto.tipoContactoId > TipoContacto.id
+
+Ref: TerceroVsContacto.terceroId > Tercero.id
+
+Ref: TerceroVsContacto.contactoId > Contacto.id
+
+Ref: TerceroVsDireccion.terceroId > Tercero.id
+
+Ref: TerceroVsDireccion.direccionId > Direccion.id
+
+Ref: ProductoVsCategoria.productoId > Producto.id
+
+Ref: ProductoVsCategoria.categoriaId > Categoria.id
+
+Ref: DetalleFactura.facturaId > Factura.id
+
+Ref: DetalleFactura.productoId > Producto.id
+
+Ref: OrdenCobro.facturaId > Factura.id
+
+Ref: Cliente.terceroId - Tercero.id
+
+Ref: Trabajador.terceroId - Tercero.id
+
+Ref: DetalleHorario.horarioId > Horario.id
+
+Ref: DetalleHorario.diaId > FormatoDia.id

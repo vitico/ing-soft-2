@@ -11,27 +11,27 @@ Table Zona {
   id Int [pk]
   nombre String [not null]
   descripcion String [not null]
-  LocalizacionZona LocalizacionZona [not null]
+  CajaZona CajaZona [not null]
   MovimientoTicket MovimientoTicket [not null]
 }
 
-Table LocalizacionZona {
+Table CajaZona {
   id Int [pk]
   descripcion String [not null]
   zonaId Int [not null]
   zona Zona [not null]
-  MovimientosLocalizacion MovimientosLocalizacion [not null]
+  MovimientosCaja MovimientosCaja [not null]
 }
 
-Table MovimientosLocalizacion {
+Table MovimientosCaja {
   id Int [pk]
   descripcion String [not null]
-  localizacionId Int [not null]
+  cajaId Int [not null]
   movimientoId Int [not null]
   fecha DateTime [not null]
   estado Boolean [not null]
   realizadoPor Trabajador [not null]
-  localizacion LocalizacionZona [not null]
+  caja CajaZona [not null]
   movimiento MovimientoTicket [not null]
   trabajadorTerceroId Int [not null]
 }
@@ -48,7 +48,7 @@ Table Trabajador {
   terceroId Int [pk]
   tercero Tercero [not null]
   MovimientoTicket MovimientoTicket [not null]
-  MovimientosLocalizacion MovimientosLocalizacion [not null]
+  MovimientosCaja MovimientosCaja [not null]
 
   indexes {
     (terceroId) [pk]
@@ -85,7 +85,7 @@ Table MovimientoTicket {
   ticket Ticket [not null]
   zona Zona [not null]
   agregadoPor Trabajador [not null]
-  MovimientosLocalizacion MovimientosLocalizacion [not null]
+  MovimientosCaja MovimientosCaja [not null]
 }
 
 Enum EstadoTicket {
@@ -94,13 +94,13 @@ Enum EstadoTicket {
   FINALIZADO
 }
 
-Ref: LocalizacionZona.zonaId > Zona.id
+Ref: CajaZona.zonaId > Zona.id
 
-Ref: MovimientosLocalizacion.trabajadorTerceroId > Trabajador.terceroId
+Ref: MovimientosCaja.trabajadorTerceroId > Trabajador.terceroId
 
-Ref: MovimientosLocalizacion.localizacionId > LocalizacionZona.id
+Ref: MovimientosCaja.cajaId > CajaZona.id
 
-Ref: MovimientosLocalizacion.movimientoId > MovimientoTicket.id
+Ref: MovimientosCaja.movimientoId > MovimientoTicket.id
 
 Ref: Trabajador.terceroId > Tercero.id
 

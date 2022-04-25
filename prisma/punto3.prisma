@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  outputName          = "punto3.dbml"
+  projectName         = "punto 3 - sistema de cobro"
+  projectDatabaseType = "PostgreSQL"
+  //https://dbdiagram.io/d
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto3"
+}
+
+model Tercero {
+  id                 Int                  @id
+  nombre             String
+  apellido           String
+  dni                String
+  TerceroVsContacto  TerceroVsContacto[]
+  TerceroVsDireccion TerceroVsDireccion[]
+  Cliente            Cliente?             @relation(name: "cliente_tercero")
+  Trabajador         Trabajador?          @relation("trabajador_tercero")
+  clienteTerceroId   Int?
+}
+
+model Contacto {
+  id                Int                 @id
+  Valor             String
+  TipoContacto      TipoContacto?       @relation(fields: [tipoContactoId], references: [id])
+  tipoContactoId    Int?
+  TerceroVsContacto TerceroVsContacto[]
+}
+
+model TipoContacto {
+  id     Int    @id
+  nombre String
+
+  contactos Contacto[]
+}
+
+model TerceroVsContacto {
+  id         Int      @id
+  tercero    Tercero  @relation(fields: [terceroId], references: [id])
+  contacto   Contacto @relation(fields: [contactoId], references: [id])
+  terceroId  Int
+  contactoId Int
+}
+
+model Direccion {
+  id                 Int                  @id
+  calle              String
+  numero             String
+  piso               String
+  departamento       String
+  localidad          String
+  provincia          String
+  pais               String
+  TerceroVsDireccion TerceroVsDireccion[]
+}
+
+model TerceroVsDireccion {
+  id          Int       @id
+  tercero     Tercero   @relation(fields: [terceroId], references: [id])
+  direccion   Direccion @relation(fields: [direccionId], references: [id])
+  terceroId   Int
+  direccionId Int
+}
+
+model Producto {
+  id                  Int                   @id
+  nombre              String
+  precio              Float
+  ProductoVsCategoria ProductoVsCategoria[]
+  DetalleFactura      DetalleFactura[]
+}
+
+model Categoria {
+  id     Int    @id
+  nombre String
+
+  ProductoVsCategoria ProductoVsCategoria[]
+}
+
+model ProductoVsCategoria {
+  id          Int       @id
+  producto    Producto  @relation(fields: [productoId], references: [id])
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  productoId  Int
+  categoriaId Int
+}
+
+model Factura {
+  id     Int      @id
+  numero String
+  fecha  DateTime
+
+  detalleFactura DetalleFactura[]
+
+  OrdenCobro OrdenCobro[]
+}
+
+model DetalleFactura {
+  id         Int      @id
+  factura    Factura  @relation(fields: [facturaId], references: [id])
+  producto   Producto @relation(fields: [productoId], references: [id])
+  cantidad   Int
+  precio     Float
+  facturaId  Int
+  productoId Int
+}
+
+model OrdenCobro {
+  id      Int      @id
+  numero  String
+  fecha   DateTime
+  factura Factura  @relation(fields: [facturaId], references: [id])
+
+  facturaId Int
+}
+
+model Cliente {
+  tercero   Tercero @relation(name: "cliente_tercero", fields: [terceroId], references: [id])
+  terceroId Int     @id
+}
+
+model Trabajador {
+  tercero   Tercero @relation(name: "trabajador_tercero", fields: [terceroId], references: [id])
+  terceroId Int     @id
+}
+
+model Horario {
+  id             Int              @id
+  nombre         String
+  DetalleHorario DetalleHorario[]
+}
+
+model DetalleHorario {
+  id         Int        @id
+  horario    Horario    @relation(fields: [horarioId], references: [id])
+  horaInicio DateTime
+  horaFin    DateTime
+  dia        FormatoDia @relation(fields: [diaId], references: [id])
+
+  horarioId    Int
+  trabajadorId Int
+  diaId        Int
+}
+
+model FormatoDia {
+  id             Int              @id
+  nombre         String
+  DetalleHorario DetalleHorario[]
+}
