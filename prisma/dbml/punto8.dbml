@@ -12,6 +12,7 @@ Table Producto {
   nombre String [not null]
   precio Int [not null]
   Descuento Descuento [not null]
+  DetalleFactura DetalleFactura [not null]
 }
 
 Table Cliente {
@@ -23,6 +24,7 @@ Table Cliente {
   email String [not null]
   tipoClienteId Int
   tipoCliente tipoCliente
+  Factura Factura [not null]
 }
 
 Table tipoCliente {
@@ -49,6 +51,7 @@ Table Descuento {
   producto Producto [not null]
   tipoCliente tipoCliente [not null]
   rango Rango [not null]
+  DetalleFactura DetalleFactura [not null]
 
   indexes {
     (rangoId, productoId, tipoClienteId) [pk]
@@ -61,6 +64,30 @@ Table Sucursal {
   direccion String [not null]
   telefono String [not null]
   email String [not null]
+  Factura Factura [not null]
+}
+
+Table Factura {
+  id Int [pk]
+  fecha DateTime [not null]
+  clienteId Int [not null]
+  sucursalId Int [not null]
+  cliente Cliente [not null]
+  sucursal Sucursal [not null]
+  DetalleFactura DetalleFactura [not null]
+}
+
+Table DetalleFactura {
+  id Int [pk]
+  cantidad Int [not null]
+  precio Int [not null]
+  productoId Int [not null]
+  facturaId Int [not null]
+  descuento Descuento
+  producto Producto [not null]
+  factura Factura [not null]
+  descuentoRangoId Int
+  descuentoTipoClienteId Int
 }
 
 Ref: Cliente.tipoClienteId > tipoCliente.id
@@ -70,3 +97,13 @@ Ref: Descuento.productoId > Producto.id
 Ref: Descuento.tipoClienteId > tipoCliente.id
 
 Ref: Descuento.rangoId > Rango.id
+
+Ref: Factura.clienteId > Cliente.id
+
+Ref: Factura.sucursalId > Sucursal.id
+
+Ref: DetalleFactura.(descuentoRangoId, productoId, descuentoTipoClienteId) > Descuento.(rangoId, productoId, tipoClienteId)
+
+Ref: DetalleFactura.productoId > Producto.id
+
+Ref: DetalleFactura.facturaId > Factura.id

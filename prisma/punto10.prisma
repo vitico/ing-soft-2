@@ -20,6 +20,8 @@ model Trabajador {
   apellido String
 
   TrabajadorCapacidad TrabajadorCapacidad[]
+  AsignacionTrabajdor AsignacionTrabajdor[]
+  HorarioTrabajador   HorarioTrabajador[]
 }
 
 model Maquina {
@@ -40,11 +42,29 @@ model MaquinaCapacidad {
 }
 
 model Capacidad {
-  id                  Int                   @id
-  nombre              String
-  descripcion         String
-  MaquinaCapacidad    MaquinaCapacidad[]
-  TrabajadorCapacidad TrabajadorCapacidad[]
+  id                     Int                      @id
+  nombre                 String
+  descripcion            String
+  MaquinaCapacidad       MaquinaCapacidad[]
+  TrabajadorCapacidad    TrabajadorCapacidad[]
+  EntrenamientoCapacidad EntrenamientoCapacidad[]
+}
+
+model EntrenamientoCapacidad {
+  entrenamiento   Entrenamiento @relation(fields: [entrenamientoId], references: [id])
+  capacidad       Capacidad     @relation(fields: [capacidadId], references: [id])
+  entrenamientoId Int
+  capacidadId     Int
+
+  @@id([entrenamientoId, capacidadId])
+}
+
+model Entrenamiento {
+  id                     Int                      @id
+  nombre                 String
+  descripcion            String
+  EntrenamientoCapacidad EntrenamientoCapacidad[]
+  duracionEnSegundos     Int
 }
 
 model TrabajadorCapacidad {
@@ -57,10 +77,11 @@ model TrabajadorCapacidad {
 }
 
 model Area {
-  id          Int           @id
-  nombre      String
-  descripcion String
-  AreaMaquina AreaMaquina[]
+  id                  Int                   @id
+  nombre              String
+  descripcion         String
+  AreaMaquina         AreaMaquina[]
+  AsignacionTrabajdor AsignacionTrabajdor[]
 }
 
 model AreaMaquina {
@@ -70,4 +91,62 @@ model AreaMaquina {
   maquinaId Int
 
   @@id([areaId, maquinaId])
+}
+
+enum EstadoAsignacion {
+  Pendiente
+  EnProceso
+  Terminado
+}
+
+model AsignacionTrabajdor {
+  id           Int        @id
+  trabajador   Trabajador @relation(fields: [trabajadorId], references: [id])
+  area         Area       @relation(fields: [areaId], references: [id])
+  fechaInicio  DateTime
+  fechaFin     DateTime
+  trabajadorId Int
+  areaId       Int
+
+  estado            EstadoAsignacion
+  HorarioAsignacion HorarioAsignacion[]
+}
+
+model Dia {
+  id                Int                 @id
+  nombre            String
+  HorarioTrabajador HorarioTrabajador[]
+  HorarioAsignacion HorarioAsignacion[]
+}
+
+model Horario {
+  id         Int      @id
+  nombre     String
+  horaInicio DateTime
+  horaFin    DateTime
+
+  HorarioTrabajador HorarioTrabajador[]
+  HorarioAsignacion HorarioAsignacion[]
+}
+
+model HorarioTrabajador {
+  horario      Horario    @relation(fields: [horarioId], references: [id])
+  trabajador   Trabajador @relation(fields: [trabajadorId], references: [id])
+  dia          Dia        @relation(fields: [diaId], references: [id])
+  horarioId    Int
+  trabajadorId Int
+  diaId        Int
+
+  @@id([horarioId, trabajadorId, diaId])
+}
+
+model HorarioAsignacion {
+  horario      Horario             @relation(fields: [horarioId], references: [id])
+  asignacion   AsignacionTrabajdor @relation(fields: [asignacionId], references: [id])
+  dia          Dia                 @relation(fields: [diaId], references: [id])
+  horarioId    Int
+  asignacionId Int
+  diaId        Int
+
+  @@id([horarioId, asignacionId, diaId])
 }

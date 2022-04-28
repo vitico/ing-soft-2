@@ -7,12 +7,6 @@ Project "punto 9 - industria textil" {
   Note: ''
 }
 
-Table Municipio {
-  id Int [pk]
-  nombre String [not null]
-  Ayuntamiento Ayuntamiento [not null]
-}
-
 Table Ayuntamiento {
   id Int [pk, increment]
   nombre String [not null]
@@ -25,17 +19,19 @@ Table Letrero {
   id Int [pk, increment]
   tamano Float [not null]
   ayuntamientoId Int [not null]
-  materialId Int [not null]
-  unidadId Int [not null]
   ayuntamiento Ayuntamiento [not null]
-  unidadMedida Unidad [not null]
-  Material Material [not null]
+  Calle Calle
+  calleId Int
+  PagoLetrero PagoLetrero [not null]
+  material MaterialUnidad [not null]
+  dueno Tercero [not null]
+  terceroId Int [not null]
+  materialUnidadId Int [not null]
 }
 
 Table Material {
   id Int [pk, increment]
   nombre String [not null]
-  Letrero Letrero [not null]
   MaterialUnidad MaterialUnidad [not null]
 }
 
@@ -46,6 +42,7 @@ Table MaterialUnidad {
   materialId Int [not null]
   unidadId Int [not null]
   costo Float [not null]
+  Letrero Letrero [not null]
 }
 
 Table Unidad {
@@ -56,19 +53,94 @@ Table Unidad {
   Unidad Unidad
   Unidades Unidad [not null]
   MaterialUnidad MaterialUnidad [not null]
+}
+
+Table Calle {
+  id Int [pk, increment]
+  nombre String [not null]
+  referencia Float [not null]
+  calleId Int
+  Calle Calle
+  Calles Calle [not null]
   Letrero Letrero [not null]
+  Municipio Municipio
+  municipioId Int
+  variacionPrecioFijo Float [not null]
+  variacionPrecioPorcentual Float [not null]
+}
+
+Table Pais {
+  id Int [pk, increment]
+  nombre String [not null]
+  Provincia Provincia [not null]
+}
+
+Table Provincia {
+  id Int [pk, increment]
+  nombre String [not null]
+  paisId Int [not null]
+  Municipio Municipio [not null]
+  Pais Pais [not null]
+}
+
+Table Municipio {
+  id Int [pk, increment]
+  nombre String [not null]
+  provinciaId Int [not null]
+  Calle Calle [not null]
+  Ayuntamiento Ayuntamiento [not null]
+  Provincia Provincia [not null]
+  variacionPrecioFijo Float [not null]
+  variacionPrecioPorcentual Float [not null]
+}
+
+Table Tercero {
+  id Int [pk, increment]
+  nombre String [not null]
+  PagoLetrero PagoLetrero [not null]
+  Letrero Letrero [not null]
+}
+
+Table PagoLetrero {
+  id Int [pk, increment]
+  Letrero Letrero [not null]
+  Tercero Tercero [not null]
+  precio Float [not null]
+  estado EstadoPago [not null]
+  letreroId Int [not null]
+  terceroId Int [not null]
+}
+
+Enum EstadoPago {
+  PENDIENTE
+  PAGADO
+  CANCELADO
 }
 
 Ref: Ayuntamiento.municipioId > Municipio.id
 
 Ref: Letrero.ayuntamientoId > Ayuntamiento.id
 
-Ref: Letrero.unidadId > Unidad.id
+Ref: Letrero.calleId > Calle.id
 
-Ref: Letrero.materialId > Material.id
+Ref: Letrero.materialUnidadId > MaterialUnidad.id
+
+Ref: Letrero.terceroId > Tercero.id
 
 Ref: MaterialUnidad.materialId > Material.id
 
 Ref: MaterialUnidad.unidadId > Unidad.id
 
 Ref: Unidad.unidadId - Unidad.id
+
+Ref: Calle.calleId - Calle.id
+
+Ref: Calle.municipioId > Municipio.id
+
+Ref: Provincia.paisId > Pais.id
+
+Ref: Municipio.provinciaId > Provincia.id
+
+Ref: PagoLetrero.letreroId > Letrero.id
+
+Ref: PagoLetrero.terceroId > Tercero.id

@@ -14,143 +14,93 @@ datasource db {
   url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto5"
 }
 
-model Tercero {
-  id                 Int                  @id
-  nombre             String
-  apellido           String
-  dni                String
-  TerceroVsContacto  TerceroVsContacto[]
-  TerceroVsDireccion TerceroVsDireccion[]
-  Cliente            Cliente?             @relation(name: "cliente_tercero")
-  Trabajador         Trabajador?          @relation("trabajador_tercero")
-  clienteTerceroId   Int?
-}
-
-model Contacto {
-  id                Int                 @id
-  Valor             String
-  TipoContacto      TipoContacto?       @relation(fields: [tipoContactoId], references: [id])
-  tipoContactoId    Int?
-  TerceroVsContacto TerceroVsContacto[]
-}
-
-model TipoContacto {
-  id     Int    @id
-  nombre String
-
-  contactos Contacto[]
-}
-
-model TerceroVsContacto {
-  id         Int      @id
-  tercero    Tercero  @relation(fields: [terceroId], references: [id])
-  contacto   Contacto @relation(fields: [contactoId], references: [id])
-  terceroId  Int
-  contactoId Int
-}
-
-model Direccion {
-  id                 Int                  @id
-  calle              String
-  numero             String
-  piso               String
-  departamento       String
-  localidad          String
-  provincia          String
-  pais               String
-  TerceroVsDireccion TerceroVsDireccion[]
-}
-
-model TerceroVsDireccion {
-  id          Int       @id
-  tercero     Tercero   @relation(fields: [terceroId], references: [id])
-  direccion   Direccion @relation(fields: [direccionId], references: [id])
-  terceroId   Int
-  direccionId Int
-}
-
-model Producto {
-  id                  Int                   @id
-  nombre              String
-  precio              Float
-  ProductoVsCategoria ProductoVsCategoria[]
-  DetalleFactura      DetalleFactura[]
-}
-
-model Categoria {
-  id     Int    @id
-  nombre String
-
-  ProductoVsCategoria ProductoVsCategoria[]
-}
-
-model ProductoVsCategoria {
-  id          Int       @id
-  producto    Producto  @relation(fields: [productoId], references: [id])
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-  productoId  Int
-  categoriaId Int
-}
-
-model Factura {
-  id     Int      @id
-  numero String
-  fecha  DateTime
-
-  detalleFactura DetalleFactura[]
-
-  OrdenCobro OrdenCobro[]
-}
-
-model DetalleFactura {
-  id         Int      @id
-  factura    Factura  @relation(fields: [facturaId], references: [id])
-  producto   Producto @relation(fields: [productoId], references: [id])
-  cantidad   Int
-  precio     Float
-  facturaId  Int
-  productoId Int
-}
-
-model OrdenCobro {
-  id      Int      @id
-  numero  String
-  fecha   DateTime
-  factura Factura  @relation(fields: [facturaId], references: [id])
-
-  facturaId Int
+model Persona {
+  idPersona Int        @id
+  nombre    String
+  apellido  String
+  sexo      String
+  Cliente   Cliente[]
+  Empleado  Empleado[]
 }
 
 model Cliente {
-  tercero   Tercero @relation(name: "cliente_tercero", fields: [terceroId], references: [id])
-  terceroId Int     @id
+  persona    Persona      @relation(fields: [idPersona], references: [idPersona])
+  idPersona  Int          @id
+  Cotizacion Cotizacion[]
+  estado     Boolean
+
 }
 
-model Trabajador {
-  tercero   Tercero @relation(name: "trabajador_tercero", fields: [terceroId], references: [id])
-  terceroId Int     @id
+model Empleado {
+  persona            Persona              @relation(fields: [idPersona], references: [idPersona])
+  idPersona          Int                  @id
+  Cotizacion         Cotizacion[]
+  ResultadoVsMotivos ResultadoVsMotivos[]
+
+  estado Boolean
 }
 
-model Horario {
-  id             Int              @id
-  nombre         String
-  DetalleHorario DetalleHorario[]
+model Cotizacion {
+  idCotizacion Int      @id
+  fecha        DateTime
+  total        Float
+  cantVisitas  Int
+  cantLlamadas Int
+  cliente      Cliente  @relation(fields: [clienteIdPersona], references: [idPersona])
+  empleado     Empleado @relation(fields: [empleadoIdPersona], references: [idPersona])
+
+  clienteIdPersona  Int
+  empleadoIdPersona Int
+  DetalleCotizacion DetalleCotizacion[]
 }
 
-model DetalleHorario {
-  id         Int        @id
-  horario    Horario    @relation(fields: [horarioId], references: [id])
-  horaInicio DateTime
-  horaFin    DateTime
-  dia        FormatoDia @relation(fields: [diaId], references: [id])
-
-  horarioId    Int
-  trabajadorId Int
-  diaId        Int
+model Producto {
+  id                Int                 @id
+  nombre            String
+  precio            Float
+  DetalleCotizacion DetalleCotizacion[]
 }
 
-model FormatoDia {
-  id             Int              @id
-  nombre         String
-  DetalleHorario DetalleHorario[]
+model DetalleCotizacion {
+  cotizacion     Cotizacion @relation(fields: [idCotizacion], references: [idCotizacion])
+  producto       Producto   @relation(fields: [idProducto], references: [id])
+  cantidad       Int
+  precioUnitario Float
+  fecha          DateTime
+  idCotizacion   Int
+  idProducto     Int
+
+  @@id([idCotizacion, idProducto])
+}
+
+model Resultados {
+  idResultado        Int                  @id
+  descripcion        String
+  ResultadoVsMotivos ResultadoVsMotivos[]
+}
+
+model Motivos {
+  idMotivo           Int                  @id
+  descripcion        String
+  ResultadoVsMotivos ResultadoVsMotivos[]
+}
+
+model Departamento {
+  idDepartamento     Int                  @id
+  nombre             String
+  ResultadoVsMotivos ResultadoVsMotivos[]
+}
+
+model ResultadoVsMotivos {
+  resultado    Resultados   @relation(fields: [idResultado], references: [idResultado])
+  motivo       Motivos      @relation(fields: [idMotivo], references: [idMotivo])
+  responsable  Empleado     @relation(fields: [empleadoIdPersona], references: [idPersona])
+  departamento Departamento @relation(fields: [departamentoIdDepartamento], references: [idDepartamento])
+
+  idResultado Int
+  idMotivo    Int
+
+  empleadoIdPersona          Int
+  departamentoIdDepartamento Int
+  @@id([idResultado, idMotivo])
 }

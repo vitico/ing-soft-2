@@ -7,165 +7,101 @@ Project "punto 4 - sistema de cobro" {
   Note: ''
 }
 
-Table Tercero {
-  id Int [pk]
+Table Persona {
+  idPersona Int [pk, increment]
   nombre String [not null]
   apellido String [not null]
-  dni String [not null]
-  TerceroVsContacto TerceroVsContacto [not null]
-  TerceroVsDireccion TerceroVsDireccion [not null]
-  Cliente Cliente
-  Trabajador Trabajador
-  clienteTerceroId Int
+  sexo String [not null]
+  Usuario Usuario [not null]
 }
 
-Table Contacto {
-  id Int [pk]
-  Valor String [not null]
-  TipoContacto TipoContacto
-  tipoContactoId Int
-  TerceroVsContacto TerceroVsContacto [not null]
+Table Usuario {
+  estado Boolean [not null]
+  idPersona Int [pk]
+  idTipo Int
+  grupoIdGrupo Int
+  persona Persona [not null]
+  tipoUsuario tipoUsuario
+  PermisoUsuario PermisoUsuario [not null]
+  Grupo Grupo
 }
 
-Table TipoContacto {
-  id Int [pk]
+Table tipoUsuario {
+  idTipoUsuario Int [pk, increment]
   nombre String [not null]
-  contactos Contacto [not null]
+  Usuario Usuario [not null]
 }
 
-Table TerceroVsContacto {
-  id Int [pk]
-  tercero Tercero [not null]
-  contacto Contacto [not null]
-  terceroId Int [not null]
-  contactoId Int [not null]
-}
-
-Table Direccion {
-  id Int [pk]
-  calle String [not null]
-  numero String [not null]
-  piso String [not null]
-  departamento String [not null]
-  localidad String [not null]
-  provincia String [not null]
-  pais String [not null]
-  TerceroVsDireccion TerceroVsDireccion [not null]
-}
-
-Table TerceroVsDireccion {
-  id Int [pk]
-  tercero Tercero [not null]
-  direccion Direccion [not null]
-  terceroId Int [not null]
-  direccionId Int [not null]
-}
-
-Table Producto {
-  id Int [pk]
+Table Permiso {
+  idPermiso Int [pk, increment]
   nombre String [not null]
-  precio Float [not null]
-  ProductoVsCategoria ProductoVsCategoria [not null]
-  DetalleFactura DetalleFactura [not null]
+  PermisoUsuario PermisoUsuario [not null]
+  PermisoGroup PermisoGroup [not null]
+  MenuPermisosRequerido MenuPermisosRequerido [not null]
 }
 
-Table Categoria {
-  id Int [pk]
+Table PermisoUsuario {
+  permiso Permiso [not null]
+  usuario Usuario [not null]
+  idPermiso Int [not null]
+  idUsuario Int [not null]
+
+  indexes {
+    (idPermiso, idUsuario) [pk]
+  }
+}
+
+Table Menu {
+  idMenu Int [pk, increment]
   nombre String [not null]
-  ProductoVsCategoria ProductoVsCategoria [not null]
+  menus Menu [not null]
+  Menu Menu
+  idPadre Int
+  MenuPermisosRequerido MenuPermisosRequerido [not null]
 }
 
-Table ProductoVsCategoria {
-  id Int [pk]
-  producto Producto [not null]
-  categoria Categoria [not null]
-  productoId Int [not null]
-  categoriaId Int [not null]
+Table MenuPermisosRequerido {
+  menu Menu [not null]
+  permiso Permiso [not null]
+  idMenu Int [not null]
+  idPermiso Int [not null]
+
+  indexes {
+    (idMenu, idPermiso) [pk]
+  }
 }
 
-Table Factura {
-  id Int [pk]
-  numero String [not null]
-  fecha DateTime [not null]
-  detalleFactura DetalleFactura [not null]
-  OrdenCobro OrdenCobro [not null]
-}
-
-Table DetalleFactura {
-  id Int [pk]
-  factura Factura [not null]
-  producto Producto [not null]
-  cantidad Int [not null]
-  precio Float [not null]
-  facturaId Int [not null]
-  productoId Int [not null]
-}
-
-Table OrdenCobro {
-  id Int [pk]
-  numero String [not null]
-  fecha DateTime [not null]
-  factura Factura [not null]
-  facturaId Int [not null]
-}
-
-Table Cliente {
-  tercero Tercero [not null]
-  terceroId Int [pk]
-}
-
-Table Trabajador {
-  tercero Tercero [not null]
-  terceroId Int [pk]
-}
-
-Table Horario {
-  id Int [pk]
+Table Grupo {
+  idGrupo Int [pk, increment]
   nombre String [not null]
-  DetalleHorario DetalleHorario [not null]
+  Usuario Usuario [not null]
+  PermisoGroup PermisoGroup [not null]
 }
 
-Table DetalleHorario {
-  id Int [pk]
-  horario Horario [not null]
-  horaInicio DateTime [not null]
-  horaFin DateTime [not null]
-  dia FormatoDia [not null]
-  horarioId Int [not null]
-  trabajadorId Int [not null]
-  diaId Int [not null]
+Table PermisoGroup {
+  idPermisoGroup Int [pk, increment]
+  permiso Permiso [not null]
+  grupo Grupo [not null]
+  permisoIdPermiso Int [not null]
+  grupoIdGrupo Int [not null]
 }
 
-Table FormatoDia {
-  id Int [pk]
-  nombre String [not null]
-  DetalleHorario DetalleHorario [not null]
-}
+Ref: Usuario.idPersona > Persona.idPersona
 
-Ref: Contacto.tipoContactoId > TipoContacto.id
+Ref: Usuario.idTipo > tipoUsuario.idTipoUsuario
 
-Ref: TerceroVsContacto.terceroId > Tercero.id
+Ref: Usuario.grupoIdGrupo > Grupo.idGrupo
 
-Ref: TerceroVsContacto.contactoId > Contacto.id
+Ref: PermisoUsuario.idPermiso > Permiso.idPermiso
 
-Ref: TerceroVsDireccion.terceroId > Tercero.id
+Ref: PermisoUsuario.idUsuario > Usuario.idPersona
 
-Ref: TerceroVsDireccion.direccionId > Direccion.id
+Ref: Menu.idPadre > Menu.idMenu
 
-Ref: ProductoVsCategoria.productoId > Producto.id
+Ref: MenuPermisosRequerido.idMenu > Menu.idMenu
 
-Ref: ProductoVsCategoria.categoriaId > Categoria.id
+Ref: MenuPermisosRequerido.idPermiso > Permiso.idPermiso
 
-Ref: DetalleFactura.facturaId > Factura.id
+Ref: PermisoGroup.permisoIdPermiso > Permiso.idPermiso
 
-Ref: DetalleFactura.productoId > Producto.id
-
-Ref: OrdenCobro.facturaId > Factura.id
-
-Ref: Cliente.terceroId - Tercero.id
-
-Ref: Trabajador.terceroId - Tercero.id
-
-Ref: DetalleHorario.horarioId > Horario.id
-
-Ref: DetalleHorario.diaId > FormatoDia.id
+Ref: PermisoGroup.grupoIdGrupo > Grupo.idGrupo

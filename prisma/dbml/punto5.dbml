@@ -7,165 +7,113 @@ Project "punto 5 - sistema de cobro" {
   Note: ''
 }
 
-Table Tercero {
-  id Int [pk]
+Table Persona {
+  idPersona Int [pk]
   nombre String [not null]
   apellido String [not null]
-  dni String [not null]
-  TerceroVsContacto TerceroVsContacto [not null]
-  TerceroVsDireccion TerceroVsDireccion [not null]
-  Cliente Cliente
-  Trabajador Trabajador
-  clienteTerceroId Int
+  sexo String [not null]
+  Cliente Cliente [not null]
+  Empleado Empleado [not null]
 }
 
-Table Contacto {
-  id Int [pk]
-  Valor String [not null]
-  TipoContacto TipoContacto
-  tipoContactoId Int
-  TerceroVsContacto TerceroVsContacto [not null]
+Table Cliente {
+  persona Persona [not null]
+  idPersona Int [pk]
+  Cotizacion Cotizacion [not null]
+  estado Boolean [not null]
 }
 
-Table TipoContacto {
-  id Int [pk]
-  nombre String [not null]
-  contactos Contacto [not null]
+Table Empleado {
+  persona Persona [not null]
+  idPersona Int [pk]
+  Cotizacion Cotizacion [not null]
+  ResultadoVsMotivos ResultadoVsMotivos [not null]
+  estado Boolean [not null]
 }
 
-Table TerceroVsContacto {
-  id Int [pk]
-  tercero Tercero [not null]
-  contacto Contacto [not null]
-  terceroId Int [not null]
-  contactoId Int [not null]
-}
-
-Table Direccion {
-  id Int [pk]
-  calle String [not null]
-  numero String [not null]
-  piso String [not null]
-  departamento String [not null]
-  localidad String [not null]
-  provincia String [not null]
-  pais String [not null]
-  TerceroVsDireccion TerceroVsDireccion [not null]
-}
-
-Table TerceroVsDireccion {
-  id Int [pk]
-  tercero Tercero [not null]
-  direccion Direccion [not null]
-  terceroId Int [not null]
-  direccionId Int [not null]
+Table Cotizacion {
+  idCotizacion Int [pk]
+  fecha DateTime [not null]
+  total Float [not null]
+  cantVisitas Int [not null]
+  cantLlamadas Int [not null]
+  cliente Cliente [not null]
+  empleado Empleado [not null]
+  clienteIdPersona Int [not null]
+  empleadoIdPersona Int [not null]
+  DetalleCotizacion DetalleCotizacion [not null]
 }
 
 Table Producto {
   id Int [pk]
   nombre String [not null]
   precio Float [not null]
-  ProductoVsCategoria ProductoVsCategoria [not null]
-  DetalleFactura DetalleFactura [not null]
+  DetalleCotizacion DetalleCotizacion [not null]
 }
 
-Table Categoria {
-  id Int [pk]
-  nombre String [not null]
-  ProductoVsCategoria ProductoVsCategoria [not null]
-}
-
-Table ProductoVsCategoria {
-  id Int [pk]
-  producto Producto [not null]
-  categoria Categoria [not null]
-  productoId Int [not null]
-  categoriaId Int [not null]
-}
-
-Table Factura {
-  id Int [pk]
-  numero String [not null]
-  fecha DateTime [not null]
-  detalleFactura DetalleFactura [not null]
-  OrdenCobro OrdenCobro [not null]
-}
-
-Table DetalleFactura {
-  id Int [pk]
-  factura Factura [not null]
+Table DetalleCotizacion {
+  cotizacion Cotizacion [not null]
   producto Producto [not null]
   cantidad Int [not null]
-  precio Float [not null]
-  facturaId Int [not null]
-  productoId Int [not null]
-}
-
-Table OrdenCobro {
-  id Int [pk]
-  numero String [not null]
+  precioUnitario Float [not null]
   fecha DateTime [not null]
-  factura Factura [not null]
-  facturaId Int [not null]
+  idCotizacion Int [not null]
+  idProducto Int [not null]
+
+  indexes {
+    (idCotizacion, idProducto) [pk]
+  }
 }
 
-Table Cliente {
-  tercero Tercero [not null]
-  terceroId Int [pk]
+Table Resultados {
+  idResultado Int [pk]
+  descripcion String [not null]
+  ResultadoVsMotivos ResultadoVsMotivos [not null]
 }
 
-Table Trabajador {
-  tercero Tercero [not null]
-  terceroId Int [pk]
+Table Motivos {
+  idMotivo Int [pk]
+  descripcion String [not null]
+  ResultadoVsMotivos ResultadoVsMotivos [not null]
 }
 
-Table Horario {
-  id Int [pk]
+Table Departamento {
+  idDepartamento Int [pk]
   nombre String [not null]
-  DetalleHorario DetalleHorario [not null]
+  ResultadoVsMotivos ResultadoVsMotivos [not null]
 }
 
-Table DetalleHorario {
-  id Int [pk]
-  horario Horario [not null]
-  horaInicio DateTime [not null]
-  horaFin DateTime [not null]
-  dia FormatoDia [not null]
-  horarioId Int [not null]
-  trabajadorId Int [not null]
-  diaId Int [not null]
+Table ResultadoVsMotivos {
+  resultado Resultados [not null]
+  motivo Motivos [not null]
+  responsable Empleado [not null]
+  departamento Departamento [not null]
+  idResultado Int [not null]
+  idMotivo Int [not null]
+  empleadoIdPersona Int [not null]
+  departamentoIdDepartamento Int [not null]
+
+  indexes {
+    (idResultado, idMotivo) [pk]
+  }
 }
 
-Table FormatoDia {
-  id Int [pk]
-  nombre String [not null]
-  DetalleHorario DetalleHorario [not null]
-}
+Ref: Cliente.idPersona > Persona.idPersona
 
-Ref: Contacto.tipoContactoId > TipoContacto.id
+Ref: Empleado.idPersona > Persona.idPersona
 
-Ref: TerceroVsContacto.terceroId > Tercero.id
+Ref: Cotizacion.clienteIdPersona > Cliente.idPersona
 
-Ref: TerceroVsContacto.contactoId > Contacto.id
+Ref: Cotizacion.empleadoIdPersona > Empleado.idPersona
 
-Ref: TerceroVsDireccion.terceroId > Tercero.id
+Ref: DetalleCotizacion.idCotizacion > Cotizacion.idCotizacion
 
-Ref: TerceroVsDireccion.direccionId > Direccion.id
+Ref: DetalleCotizacion.idProducto > Producto.id
 
-Ref: ProductoVsCategoria.productoId > Producto.id
+Ref: ResultadoVsMotivos.idResultado > Resultados.idResultado
 
-Ref: ProductoVsCategoria.categoriaId > Categoria.id
+Ref: ResultadoVsMotivos.idMotivo > Motivos.idMotivo
 
-Ref: DetalleFactura.facturaId > Factura.id
+Ref: ResultadoVsMotivos.empleadoIdPersona > Empleado.idPersona
 
-Ref: DetalleFactura.productoId > Producto.id
-
-Ref: OrdenCobro.facturaId > Factura.id
-
-Ref: Cliente.terceroId - Tercero.id
-
-Ref: Trabajador.terceroId - Tercero.id
-
-Ref: DetalleHorario.horarioId > Horario.id
-
-Ref: DetalleHorario.diaId > FormatoDia.id
+Ref: ResultadoVsMotivos.departamentoIdDepartamento > Departamento.idDepartamento

@@ -14,143 +14,82 @@ datasource db {
   url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto4"
 }
 
-model Tercero {
-  id                 Int                  @id
-  nombre             String
-  apellido           String
-  dni                String
-  TerceroVsContacto  TerceroVsContacto[]
-  TerceroVsDireccion TerceroVsDireccion[]
-  Cliente            Cliente?             @relation(name: "cliente_tercero")
-  Trabajador         Trabajador?          @relation("trabajador_tercero")
-  clienteTerceroId   Int?
+model Persona {
+  idPersona Int       @id @default(autoincrement())
+  nombre    String
+  apellido  String
+  sexo      String
+  Usuario   Usuario[]
 }
 
-model Contacto {
-  id                Int                 @id
-  Valor             String
-  TipoContacto      TipoContacto?       @relation(fields: [tipoContactoId], references: [id])
-  tipoContactoId    Int?
-  TerceroVsContacto TerceroVsContacto[]
+model Usuario {
+  estado Boolean
+
+  idPersona    Int  @id
+  idTipo       Int?
+  grupoIdGrupo Int?
+
+  persona Persona @relation(fields: [idPersona], references: [idPersona])
+
+  tipoUsuario    tipoUsuario?     @relation(fields: [idTipo], references: [idTipoUsuario])
+  PermisoUsuario PermisoUsuario[]
+  Grupo          Grupo?           @relation(fields: [grupoIdGrupo], references: [idGrupo])
 }
 
-model TipoContacto {
-  id     Int    @id
-  nombre String
-
-  contactos Contacto[]
+model tipoUsuario {
+  idTipoUsuario Int       @id @default(autoincrement())
+  nombre        String
+  Usuario       Usuario[]
 }
 
-model TerceroVsContacto {
-  id         Int      @id
-  tercero    Tercero  @relation(fields: [terceroId], references: [id])
-  contacto   Contacto @relation(fields: [contactoId], references: [id])
-  terceroId  Int
-  contactoId Int
+model Permiso {
+  idPermiso             Int                     @id @default(autoincrement())
+  nombre                String
+  PermisoUsuario        PermisoUsuario[]
+  PermisoGroup          PermisoGroup[]
+  MenuPermisosRequerido MenuPermisosRequerido[]
+
+
 }
 
-model Direccion {
-  id                 Int                  @id
-  calle              String
-  numero             String
-  piso               String
-  departamento       String
-  localidad          String
-  provincia          String
-  pais               String
-  TerceroVsDireccion TerceroVsDireccion[]
+model PermisoUsuario {
+  permiso   Permiso @relation(fields: [idPermiso], references: [idPermiso])
+  usuario   Usuario @relation(fields: [idUsuario], references: [idPersona])
+  idPermiso Int
+  idUsuario Int
+
+  @@id([idPermiso, idUsuario])
 }
 
-model TerceroVsDireccion {
-  id          Int       @id
-  tercero     Tercero   @relation(fields: [terceroId], references: [id])
-  direccion   Direccion @relation(fields: [direccionId], references: [id])
-  terceroId   Int
-  direccionId Int
+model Menu {
+  idMenu                Int                     @id @default(autoincrement())
+  nombre                String
+  menus                 Menu[]                  @relation("menu_parent")
+  Menu                  Menu?                   @relation("menu_parent", fields: [idPadre], references: [idMenu])
+  idPadre               Int?
+  MenuPermisosRequerido MenuPermisosRequerido[]
 }
 
-model Producto {
-  id                  Int                   @id
-  nombre              String
-  precio              Float
-  ProductoVsCategoria ProductoVsCategoria[]
-  DetalleFactura      DetalleFactura[]
+model MenuPermisosRequerido {
+  menu      Menu    @relation(fields: [idMenu], references: [idMenu])
+  permiso   Permiso @relation(fields: [idPermiso], references: [idPermiso])
+  idMenu    Int
+  idPermiso Int
+
+  @@id([idMenu, idPermiso])
 }
 
-model Categoria {
-  id     Int    @id
-  nombre String
-
-  ProductoVsCategoria ProductoVsCategoria[]
+model Grupo {
+  idGrupo      Int            @id @default(autoincrement())
+  nombre       String
+  Usuario      Usuario[]
+  PermisoGroup PermisoGroup[]
 }
 
-model ProductoVsCategoria {
-  id          Int       @id
-  producto    Producto  @relation(fields: [productoId], references: [id])
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-  productoId  Int
-  categoriaId Int
-}
-
-model Factura {
-  id     Int      @id
-  numero String
-  fecha  DateTime
-
-  detalleFactura DetalleFactura[]
-
-  OrdenCobro OrdenCobro[]
-}
-
-model DetalleFactura {
-  id         Int      @id
-  factura    Factura  @relation(fields: [facturaId], references: [id])
-  producto   Producto @relation(fields: [productoId], references: [id])
-  cantidad   Int
-  precio     Float
-  facturaId  Int
-  productoId Int
-}
-
-model OrdenCobro {
-  id      Int      @id
-  numero  String
-  fecha   DateTime
-  factura Factura  @relation(fields: [facturaId], references: [id])
-
-  facturaId Int
-}
-
-model Cliente {
-  tercero   Tercero @relation(name: "cliente_tercero", fields: [terceroId], references: [id])
-  terceroId Int     @id
-}
-
-model Trabajador {
-  tercero   Tercero @relation(name: "trabajador_tercero", fields: [terceroId], references: [id])
-  terceroId Int     @id
-}
-
-model Horario {
-  id             Int              @id
-  nombre         String
-  DetalleHorario DetalleHorario[]
-}
-
-model DetalleHorario {
-  id         Int        @id
-  horario    Horario    @relation(fields: [horarioId], references: [id])
-  horaInicio DateTime
-  horaFin    DateTime
-  dia        FormatoDia @relation(fields: [diaId], references: [id])
-
-  horarioId    Int
-  trabajadorId Int
-  diaId        Int
-}
-
-model FormatoDia {
-  id             Int              @id
-  nombre         String
-  DetalleHorario DetalleHorario[]
+model PermisoGroup {
+  idPermisoGroup   Int     @id @default(autoincrement())
+  permiso          Permiso @relation(fields: [permisoIdPermiso], references: [idPermiso])
+  grupo            Grupo   @relation(fields: [grupoIdGrupo], references: [idGrupo])
+  permisoIdPermiso Int
+  grupoIdGrupo     Int
 }

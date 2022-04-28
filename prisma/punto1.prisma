@@ -59,6 +59,7 @@ model Direccion {
   provincia          String
   pais               String
   TerceroVsDireccion TerceroVsDireccion[]
+  OrdenCobro         OrdenCobro[]
 }
 
 model TerceroVsDireccion {
@@ -124,11 +125,13 @@ model OrdenCobro {
   estado        EstadoOrdenCobro
   factura       Factura          @relation(fields: [facturaId], references: [id])
   trabajador    Trabajador       @relation(fields: [trabajadorTerceroId], references: [terceroId])
+  direccion     Direccion        @relation(fields: [direccionId], references: [id])
 
-
-  facturaId            Int
-  trabajadorTerceroId  Int
   MovimientoOrdenCobro MovimientoOrdenCobro[]
+
+  facturaId           Int
+  trabajadorTerceroId Int
+  direccionId         Int
 }
 
 model MovimientoOrdenCobro {

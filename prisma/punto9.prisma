@@ -14,12 +14,6 @@ datasource db {
   url      = "postgresql://postgres:postgres@lab.vitico.space:31132/ingsoft?schema=punto9"
 }
 
-model Municipio {
-  id           Int            @id
-  nombre       String
-  Ayuntamiento Ayuntamiento[]
-}
-
 model Ayuntamiento {
   id          Int       @id @default(autoincrement())
   nombre      String
@@ -29,30 +23,34 @@ model Ayuntamiento {
 }
 
 model Letrero {
-  id             Int          @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   tamano         Float
   ayuntamientoId Int
-  materialId     Int
-  unidadId       Int
-  ayuntamiento   Ayuntamiento @relation(fields: [ayuntamientoId], references: [id])
-  unidadMedida   Unidad       @relation(fields: [unidadId], references: [id])
-  Material       Material     @relation(fields: [materialId], references: [id])
+  ayuntamiento   Ayuntamiento   @relation(fields: [ayuntamientoId], references: [id])
+  Calle          Calle?         @relation(fields: [calleId], references: [id])
+  calleId        Int?
+  PagoLetrero    PagoLetrero[]
+  material       MaterialUnidad @relation(fields: [materialUnidadId], references: [id])
+  dueno          Tercero        @relation(fields: [terceroId], references: [id])
+  terceroId      Int
+
+  materialUnidadId Int
 }
 
 model Material {
   id             Int              @id @default(autoincrement())
   nombre         String
-  Letrero        Letrero[]
   MaterialUnidad MaterialUnidad[]
 }
 
 model MaterialUnidad {
-  id         Int      @id @default(autoincrement())
-  material   Material @relation(fields: [materialId], references: [id])
-  unidad     Unidad   @relation(fields: [unidadId], references: [id])
+  id         Int       @id @default(autoincrement())
+  material   Material  @relation(fields: [materialId], references: [id])
+  unidad     Unidad    @relation(fields: [unidadId], references: [id])
   materialId Int
   unidadId   Int
   costo      Float
+  Letrero    Letrero[]
 }
 
 model Unidad {
@@ -64,5 +62,73 @@ model Unidad {
   Unidad         Unidad?          @relation("unidad", fields: [unidadId], references: [id])
   Unidades       Unidad[]         @relation("unidad")
   MaterialUnidad MaterialUnidad[]
-  Letrero        Letrero[]
+}
+
+model Calle {
+  id         Int    @id @default(autoincrement())
+  nombre     String
+  referencia Float
+  calleId    Int?
+
+  Calle                     Calle?     @relation("calle", fields: [calleId], references: [id])
+  Calles                    Calle[]    @relation("calle")
+  Letrero                   Letrero[]
+  Municipio                 Municipio? @relation(fields: [municipioId], references: [id])
+  municipioId               Int?
+  variacionPrecioFijo       Float
+  variacionPrecioPorcentual Float
+
+}
+
+// pais -> provincia -> municipio -> calle, sector
+model Pais {
+  id     Int    @id @default(autoincrement())
+  nombre String
+
+  Provincia Provincia[]
+}
+
+model Provincia {
+  id        Int         @id @default(autoincrement())
+  nombre    String
+  paisId    Int
+  Municipio Municipio[]
+
+  Pais Pais @relation(fields: [paisId], references: [id])
+}
+
+model Municipio {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  provinciaId  Int
+  Calle        Calle[]
+  Ayuntamiento Ayuntamiento[]
+
+  Provincia                 Provincia @relation(fields: [provinciaId], references: [id])
+  variacionPrecioFijo       Float
+  variacionPrecioPorcentual Float
+}
+
+model Tercero {
+  id     Int    @id @default(autoincrement())
+  nombre String
+
+  PagoLetrero PagoLetrero[]
+  Letrero     Letrero[]
+}
+
+enum EstadoPago {
+  PENDIENTE
+  PAGADO
+  CANCELADO
+}
+
+model PagoLetrero {
+  id        Int        @id @default(autoincrement())
+  Letrero   Letrero    @relation(fields: [letreroId], references: [id])
+  Tercero   Tercero    @relation(fields: [terceroId], references: [id])
+  precio    Float
+  estado    EstadoPago
+  letreroId Int
+  terceroId Int
 }

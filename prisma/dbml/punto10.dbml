@@ -12,6 +12,8 @@ Table Trabajador {
   nombre String [not null]
   apellido String [not null]
   TrabajadorCapacidad TrabajadorCapacidad [not null]
+  AsignacionTrabajdor AsignacionTrabajdor [not null]
+  HorarioTrabajador HorarioTrabajador [not null]
 }
 
 Table Maquina {
@@ -39,6 +41,26 @@ Table Capacidad {
   descripcion String [not null]
   MaquinaCapacidad MaquinaCapacidad [not null]
   TrabajadorCapacidad TrabajadorCapacidad [not null]
+  EntrenamientoCapacidad EntrenamientoCapacidad [not null]
+}
+
+Table EntrenamientoCapacidad {
+  entrenamiento Entrenamiento [not null]
+  capacidad Capacidad [not null]
+  entrenamientoId Int [not null]
+  capacidadId Int [not null]
+
+  indexes {
+    (entrenamientoId, capacidadId) [pk]
+  }
+}
+
+Table Entrenamiento {
+  id Int [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  EntrenamientoCapacidad EntrenamientoCapacidad [not null]
+  duracionEnSegundos Int [not null]
 }
 
 Table TrabajadorCapacidad {
@@ -57,6 +79,7 @@ Table Area {
   nombre String [not null]
   descripcion String [not null]
   AreaMaquina AreaMaquina [not null]
+  AsignacionTrabajdor AsignacionTrabajdor [not null]
 }
 
 Table AreaMaquina {
@@ -70,9 +93,73 @@ Table AreaMaquina {
   }
 }
 
+Table AsignacionTrabajdor {
+  id Int [pk]
+  trabajador Trabajador [not null]
+  area Area [not null]
+  fechaInicio DateTime [not null]
+  fechaFin DateTime [not null]
+  trabajadorId Int [not null]
+  areaId Int [not null]
+  estado EstadoAsignacion [not null]
+  HorarioAsignacion HorarioAsignacion [not null]
+}
+
+Table Dia {
+  id Int [pk]
+  nombre String [not null]
+  HorarioTrabajador HorarioTrabajador [not null]
+  HorarioAsignacion HorarioAsignacion [not null]
+}
+
+Table Horario {
+  id Int [pk]
+  nombre String [not null]
+  horaInicio DateTime [not null]
+  horaFin DateTime [not null]
+  HorarioTrabajador HorarioTrabajador [not null]
+  HorarioAsignacion HorarioAsignacion [not null]
+}
+
+Table HorarioTrabajador {
+  horario Horario [not null]
+  trabajador Trabajador [not null]
+  dia Dia [not null]
+  horarioId Int [not null]
+  trabajadorId Int [not null]
+  diaId Int [not null]
+
+  indexes {
+    (horarioId, trabajadorId, diaId) [pk]
+  }
+}
+
+Table HorarioAsignacion {
+  horario Horario [not null]
+  asignacion AsignacionTrabajdor [not null]
+  dia Dia [not null]
+  horarioId Int [not null]
+  asignacionId Int [not null]
+  diaId Int [not null]
+
+  indexes {
+    (horarioId, asignacionId, diaId) [pk]
+  }
+}
+
+Enum EstadoAsignacion {
+  Pendiente
+  EnProceso
+  Terminado
+}
+
 Ref: MaquinaCapacidad.maquinaId > Maquina.id
 
 Ref: MaquinaCapacidad.capacidadId > Capacidad.id
+
+Ref: EntrenamientoCapacidad.entrenamientoId > Entrenamiento.id
+
+Ref: EntrenamientoCapacidad.capacidadId > Capacidad.id
 
 Ref: TrabajadorCapacidad.trabajadorId > Trabajador.id
 
@@ -81,3 +168,19 @@ Ref: TrabajadorCapacidad.capacidadId > Capacidad.id
 Ref: AreaMaquina.areaId > Area.id
 
 Ref: AreaMaquina.maquinaId > Maquina.id
+
+Ref: AsignacionTrabajdor.trabajadorId > Trabajador.id
+
+Ref: AsignacionTrabajdor.areaId > Area.id
+
+Ref: HorarioTrabajador.horarioId > Horario.id
+
+Ref: HorarioTrabajador.trabajadorId > Trabajador.id
+
+Ref: HorarioTrabajador.diaId > Dia.id
+
+Ref: HorarioAsignacion.horarioId > Horario.id
+
+Ref: HorarioAsignacion.asignacionId > AsignacionTrabajdor.id
+
+Ref: HorarioAsignacion.diaId > Dia.id

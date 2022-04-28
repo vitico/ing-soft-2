@@ -51,6 +51,7 @@ Table Direccion {
   provincia String [not null]
   pais String [not null]
   TerceroVsDireccion TerceroVsDireccion [not null]
+  OrdenCobro OrdenCobro [not null]
 }
 
 Table TerceroVsDireccion {
@@ -108,9 +109,11 @@ Table OrdenCobro {
   estado EstadoOrdenCobro [not null]
   factura Factura [not null]
   trabajador Trabajador [not null]
+  direccion Direccion [not null]
+  MovimientoOrdenCobro MovimientoOrdenCobro [not null]
   facturaId Int [not null]
   trabajadorTerceroId Int [not null]
-  MovimientoOrdenCobro MovimientoOrdenCobro [not null]
+  direccionId Int [not null]
 }
 
 Table MovimientoOrdenCobro {
@@ -198,6 +201,8 @@ Ref: DetalleFactura.productoId > Producto.id
 Ref: OrdenCobro.facturaId > Factura.id
 
 Ref: OrdenCobro.trabajadorTerceroId > Trabajador.terceroId
+
+Ref: OrdenCobro.direccionId > Direccion.id
 
 Ref: MovimientoOrdenCobro.ordenCobroId > OrdenCobro.id
 
